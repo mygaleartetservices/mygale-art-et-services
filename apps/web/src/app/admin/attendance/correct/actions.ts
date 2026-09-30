@@ -20,6 +20,7 @@ export async function correctAttendance(_prevState: ActionState, formData: FormD
 
   const id = asString(formData.get('id'))
   const arrivalTime = asString(formData.get('arrivalTime'))
+  const departureTime = asString(formData.get('departureTime'))
   const note = asString(formData.get('note'))
 
   const record = await prisma.attendance.findUnique({ where: { id } })
@@ -36,6 +37,14 @@ export async function correctAttendance(_prevState: ActionState, formData: FormD
     return { error: 'Enter a valid time in HH:mm format.' }
   }
 
+  let departureAt: Date | null = null
+  if (departureTime) {
+    departureAt = zonedTimeToInstant(dateStr, departureTime)
+    if (!departureAt) {
+      return { error: 'Enter a valid departure time in HH:mm format.' }
+    }
+  }
+
   const { windowEndMinutes } = await resolveAttendanceWindow(record.departmentId)
   const status = computeAttendanceStatus(arrivalAt, windowEndMinutes)
 
@@ -43,6 +52,7 @@ export async function correctAttendance(_prevState: ActionState, formData: FormD
     where: { id },
     data: {
       arrivalAt,
+      departureAt,
       status,
       source: 'MANUAL',
       note,
@@ -53,7 +63,14 @@ export async function correctAttendance(_prevState: ActionState, formData: FormD
 
   await writeAuditLog(
     'attendance.correct',
-    { entityType: 'Attendance', entityId: id, arrivalAt: arrivalAt.toISOString(), status, note },
+    {
+      entityType: 'Attendance',
+      entityId: id,
+      arrivalAt: arrivalAt.toISOString(),
+      departureAt: departureAt ? departureAt.toISOString() : null,
+      status,
+      note,
+    },
     actor.id,
   )
 
@@ -68,6 +85,7 @@ export async function createManualAttendance(_prevState: ActionState, formData: 
   const userId = asString(formData.get('userId'))
   const dateStr = asString(formData.get('date'))
   const arrivalTime = asString(formData.get('arrivalTime'))
+  const departureTime = asString(formData.get('departureTime'))
   const note = asString(formData.get('note'))
 
   if (!userId || !dateStr || !arrivalTime) {
@@ -88,6 +106,14 @@ export async function createManualAttendance(_prevState: ActionState, formData: 
   }
   const date = calendarDate(arrivalAt)
 
+  let departureAt: Date | null = null
+  if (departureTime) {
+    departureAt = zonedTimeToInstant(dateStr, departureTime)
+    if (!departureAt) {
+      return { error: 'Enter a valid departure time.' }
+    }
+  }
+
   const existing = await prisma.attendance.findUnique({ where: { userId_date: { userId, date } } })
   if (existing) {
     return { error: 'This employee already has an attendance record for that date.' }
@@ -105,6 +131,7 @@ export async function createManualAttendance(_prevState: ActionState, formData: 
       userId,
       date,
       arrivalAt,
+      departureAt,
       status,
       source: 'MANUAL',
       departmentId: user.departmentId,
@@ -124,6 +151,7 @@ export async function createManualAttendance(_prevState: ActionState, formData: 
       entityId: created.id,
       userId,
       arrivalAt: arrivalAt.toISOString(),
+      departureAt: departureAt ? departureAt.toISOString() : null,
       status,
       note,
     },

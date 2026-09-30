@@ -31,7 +31,13 @@ export default async function MyAttendancePage() {
       <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-5">
         <AttendancePanel
           initialRecord={
-            today ? { arrivalAt: today.arrivalAt.toISOString(), status: today.status } : null
+            today
+              ? {
+                  arrivalAt: today.arrivalAt.toISOString(),
+                  status: today.status,
+                  departureAt: today.departureAt ? today.departureAt.toISOString() : null,
+                }
+              : null
           }
         />
       </div>

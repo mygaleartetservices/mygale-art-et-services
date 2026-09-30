@@ -20,7 +20,15 @@ function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: st
   )
 }
 
-export default function CorrectForm({ id, arrivalTime }: { id: string; arrivalTime: string }) {
+export default function CorrectForm({
+  id,
+  arrivalTime,
+  departureTime,
+}: {
+  id: string
+  arrivalTime: string
+  departureTime: string
+}) {
   const [state, formAction] = useActionState(correctAttendance, initialState)
   const adminT = useAdminT()
   const t = adminT.attendanceCorrect
@@ -35,15 +43,26 @@ export default function CorrectForm({ id, arrivalTime }: { id: string; arrivalTi
         </div>
       ) : null}
 
-      <div>
-        <label className="text-sm text-neutral-300">{t.arrivalTime}</label>
-        <input
-          type="time"
-          name="arrivalTime"
-          defaultValue={arrivalTime}
-          required
-          className="mt-1 w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2"
-        />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="text-sm text-neutral-300">{t.arrivalTime}</label>
+          <input
+            type="time"
+            name="arrivalTime"
+            defaultValue={arrivalTime}
+            required
+            className="mt-1 w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2"
+          />
+        </div>
+        <div>
+          <label className="text-sm text-neutral-300">{t.departureTime}</label>
+          <input
+            type="time"
+            name="departureTime"
+            defaultValue={departureTime}
+            className="mt-1 w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2"
+          />
+        </div>
       </div>
 
       <div>
