@@ -34,12 +34,17 @@ export default async function CorrectAttendancePage({
         </p>
         <p className="mt-1 text-xs text-neutral-500">
           {t.currentArrival}: {formatClockTime(record.arrivalAt)} (
-          {record.status === 'ON_TIME' ? t.onTime : t.late})
+          {record.status === 'ON_TIME' ? t.onTime : t.late}) · {t.currentDeparture}:{' '}
+          {record.departureAt ? formatClockTime(record.departureAt) : t.notRecorded}
           {record.correctedBy ? ` · ${t.lastCorrectedBy} ${record.correctedBy.name}` : ''}
         </p>
       </div>
 
-      <CorrectForm id={record.id} arrivalTime={formatClockTime(record.arrivalAt)} />
+      <CorrectForm
+        id={record.id}
+        arrivalTime={formatClockTime(record.arrivalAt)}
+        departureTime={record.departureAt ? formatClockTime(record.departureAt) : ''}
+      />
     </div>
   )
 }

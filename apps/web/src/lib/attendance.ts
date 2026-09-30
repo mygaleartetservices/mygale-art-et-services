@@ -126,3 +126,46 @@ export async function recordCheckIn(userId: string): Promise<CheckInResult> {
 function isUniqueConstraintError(err: unknown): boolean {
   return typeof err === 'object' && err !== null && (err as { code?: string }).code === 'P2002'
 }
+
+export type CheckOutResult =
+  | { outcome: 'recorded'; departureAt: Date }
+  | { outcome: 'already_recorded'; departureAt: Date }
+  | { outcome: 'error'; code: 'inactive_account' | 'not_checked_in' }
+
+/**
+ * Records today's departure for `userId`. Mirrors recordCheckIn: the
+ * departure timestamp is always `new Date()` taken on the server, and an
+ * existing departureAt is returned as-is rather than overwritten, so a
+ * second scan/tap after signing out is a no-op instead of an error.
+ */
+export async function recordCheckOut(userId: string): Promise<CheckOutResult> {
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+  if (!user || !user.active) {
+    return { outcome: 'error', code: 'inactive_account' }
+  }
+
+  const today = calendarDate(new Date())
+  const existing = await prisma.attendance.findUnique({
+    where: { userId_date: { userId, date: today } },
+  })
+  if (!existing) {
+    return { outcome: 'error', code: 'not_checked_in' }
+  }
+  if (existing.departureAt) {
+    return { outcome: 'already_recorded', departureAt: existing.departureAt }
+  }
+
+  const now = new Date()
+  const updated = await prisma.attendance.update({
+    where: { id: existing.id },
+    data: { departureAt: now },
+  })
+
+  await writeAuditLog(
+    'attendance.checkout',
+    { entityType: 'Attendance', entityId: updated.id, departureAt: now.toISOString() },
+    userId,
+  )
+
+  return { outcome: 'recorded', departureAt: updated.departureAt as Date }
+}

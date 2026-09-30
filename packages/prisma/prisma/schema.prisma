@@ -646,10 +646,11 @@ model Attendance {
 
   /** Calendar day this attendance belongs to (app timezone), stored as a
    *  pure date so one (userId, date) pair can never carry two records. */
-  date      DateTime          @db.Date
-  arrivalAt DateTime
-  status    AttendanceStatus
-  source    AttendanceSource  @default(QR)
+  date        DateTime          @db.Date
+  arrivalAt   DateTime
+  departureAt DateTime?
+  status      AttendanceStatus
+  source      AttendanceSource  @default(QR)
 
   note          String?
   correctedById String?

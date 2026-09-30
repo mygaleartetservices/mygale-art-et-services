@@ -187,6 +187,7 @@ export default async function AdminAttendancePage({
               <th className="px-4 py-3">{t.role}</th>
               <th className="px-4 py-3">{t.date}</th>
               <th className="px-4 py-3">{t.arrival}</th>
+              <th className="px-4 py-3">{t.departure}</th>
               <th className="px-4 py-3">{t.status}</th>
               <th className="px-4 py-3">{t.actions}</th>
             </tr>
@@ -205,6 +206,9 @@ export default async function AdminAttendancePage({
                 </td>
                 <td className="px-4 py-3 text-neutral-300 whitespace-nowrap">
                   {formatClockTime(r.arrivalAt)}
+                </td>
+                <td className="px-4 py-3 text-neutral-300 whitespace-nowrap">
+                  {r.departureAt ? formatClockTime(r.departureAt) : '—'}
                 </td>
                 <td className="px-4 py-3">
                   <span
