@@ -27,6 +27,12 @@ test('Login: valid credentials redirect to /admin', async ({ page }) => {
     'E2E_ADMIN_EMAIL/E2E_ADMIN_PASSWORD not set',
   )
 
+  // The admin panel defaults to French when no locale cookie is set yet; pin
+  // English so this assertion (written against the English string) stays
+  // deterministic. See tests/e2e/attendance.spec.ts for the same pattern.
+  await page
+    .context()
+    .addCookies([{ name: 'NEXT_LOCALE', value: 'en', domain: 'localhost', path: '/' }])
   await page.goto('http://localhost:3000/login')
   await typeCredentials(page, process.env.E2E_ADMIN_EMAIL!, process.env.E2E_ADMIN_PASSWORD!)
   await page.getByRole('button', { name: 'Sign in' }).click()

@@ -53,7 +53,11 @@ async function main() {
       name: 'Admin',
       passwordHash: adminPasswordHash,
       email: 'mygaleartetservices@gmail.com',
-      role: 'ADMIN',
+      // Matches the production account's actual role, so a fresh dev/test
+      // database can exercise Super-Admin-only areas (attendance window
+      // config, audit log, viewing Super Admin accounts) the same way
+      // production does.
+      role: 'SUPER_ADMIN',
       phone: '+237600000000',
       createdAt: new Date(),
     },

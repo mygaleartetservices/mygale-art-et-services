@@ -28,6 +28,12 @@ async function typeFirst(page: Page, selector: string, text: string) {
 }
 
 async function login(page: Page) {
+  // The admin panel defaults to French when no locale cookie is set yet; pin
+  // English so these assertions (written against the English strings) stay
+  // deterministic. See tests/e2e/attendance.spec.ts for the same pattern.
+  await page
+    .context()
+    .addCookies([{ name: 'NEXT_LOCALE', value: 'en', domain: 'localhost', path: '/' }])
   await goto(page, '/login')
   await page.locator('#login-email').click()
   await page.locator('#login-email').pressSequentially(ADMIN_EMAIL!, { delay: 5 })
@@ -192,18 +198,27 @@ test.describe('Admin: Homepage + About content edits', () => {
 
     await goto(page, `/admin/homepage/${section!.id}/edit`)
     const marker = `E2E marker ${Date.now()}`
+    // The public homepage renders whichever language the viewer's NEXT_LOCALE
+    // cookie selects (pinned to English for this whole suite), so the marker
+    // needs to land in both fields for the visibility check below to be
+    // locale-independent.
     await typeFirst(page, 'textarea[name="bodyFr"]', marker)
+    await page.locator('textarea[name="bodyEn"]').fill(marker)
     await page.getByRole('button', { name: 'Save Changes' }).click()
     await page.waitForURL('**/admin/homepage', { timeout: 15_000 })
 
     const updated = await prisma.homepageSection.findUnique({ where: { key: 'about' } })
     expect(updated?.bodyFr).toBe(marker)
+    expect(updated?.bodyEn).toBe(marker)
 
     await goto(page, '/')
     await expect(page.getByText(marker)).toBeVisible()
 
     // Restore original content so the seed stays representative.
-    await prisma.homepageSection.update({ where: { key: 'about' }, data: { bodyFr: original } })
+    await prisma.homepageSection.update({
+      where: { key: 'about' },
+      data: { bodyFr: original, bodyEn: section!.bodyEn },
+    })
   })
 })
 

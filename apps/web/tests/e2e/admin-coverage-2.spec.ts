@@ -21,6 +21,12 @@ async function typeFirst(page: Page, selector: string, text: string) {
 }
 
 async function login(page: Page) {
+  // The admin panel defaults to French when no locale cookie is set yet; pin
+  // English so these assertions (written against the English strings) stay
+  // deterministic. See tests/e2e/attendance.spec.ts for the same pattern.
+  await page
+    .context()
+    .addCookies([{ name: 'NEXT_LOCALE', value: 'en', domain: 'localhost', path: '/' }])
   await goto(page, '/login')
   await page.locator('#login-email').click()
   await page.locator('#login-email').pressSequentially(ADMIN_EMAIL!, { delay: 5 })
