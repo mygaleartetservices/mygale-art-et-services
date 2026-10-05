@@ -1,5 +1,10 @@
-import { generateAttendanceQrDataUrl, getAttendanceCheckInUrl } from '@/lib/attendanceQr'
+import {
+  ATTENDANCE_QR_WINDOW_SECONDS,
+  generateAttendanceQrDataUrl,
+  getAttendanceCheckInUrl,
+} from '@/lib/attendanceQr'
 import { getAdminT } from '@/lib/getLocale'
+import AttendanceQrDisplay from './AttendanceQrDisplay'
 
 export default async function AttendanceQrPage() {
   const [qrDataUrl, adminT] = await Promise.all([generateAttendanceQrDataUrl(), getAdminT()])
@@ -13,12 +18,9 @@ export default async function AttendanceQrPage() {
         <p className="text-sm text-neutral-400">{t.body}</p>
       </div>
 
-      <div className="flex flex-col items-center gap-4 rounded-xl border border-neutral-800 bg-white p-6">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={qrDataUrl} alt="Attendance check-in QR code" width={320} height={320} />
-      </div>
-
-      <p className="break-all text-center text-xs text-neutral-500">{url}</p>
+      <AttendanceQrDisplay
+        initial={{ qrDataUrl, url, refreshMs: ATTENDANCE_QR_WINDOW_SECONDS * 1000 }}
+      />
     </div>
   )
 }

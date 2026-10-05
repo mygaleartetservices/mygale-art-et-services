@@ -1,8 +1,25 @@
 import { test, expect, type Page } from '@playwright/test'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 
 const prisma = new PrismaClient()
+
+/**
+ * Mirrors the rotating-token scheme in src/lib/attendanceQr.ts: checking in
+ * or out now requires a token proving a recent QR scan, not just being
+ * logged in. Duplicated here (rather than imported) to keep this test file
+ * self-contained, matching its existing style of local helpers.
+ */
+function attendanceToken(minutesAgo = 0): string {
+  const secret =
+    process.env.ATTENDANCE_QR_SECRET ||
+    process.env.NEXTAUTH_SECRET ||
+    process.env.DATABASE_URL ||
+    'attendance-qr-dev-fallback-secret'
+  const windowIndex = Math.floor(Date.now() / 1000 / 60) - minutesAgo
+  return crypto.createHmac('sha256', secret).update(String(windowIndex)).digest('hex').slice(0, 20)
+}
 
 const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL
 const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD
@@ -166,7 +183,7 @@ test.describe('Employee attendance check-in', () => {
     })
 
     await login(page, onTimeEmail, 'TestPassword123!')
-    await goto(page, '/admin/my-attendance')
+    await goto(page, `/admin/my-attendance?t=${attendanceToken()}`)
     await page.getByRole('button', { name: 'Scan Attendance QR' }).click()
     await expect(page.getByText('Attendance recorded successfully.')).toBeVisible({
       timeout: 15_000,
@@ -188,7 +205,7 @@ test.describe('Employee attendance check-in', () => {
     })
 
     await login(page, lateEmail, 'TestPassword123!')
-    await goto(page, '/admin/my-attendance')
+    await goto(page, `/admin/my-attendance?t=${attendanceToken()}`)
     await page.getByRole('button', { name: 'Scan Attendance QR' }).click()
     await expect(page.getByText('Attendance recorded successfully.')).toBeVisible({
       timeout: 15_000,
@@ -222,6 +239,52 @@ test.describe('Employee attendance check-in', () => {
     await prisma.user.deleteMany({ where: { id: { in: userIds } } })
     await prisma.attendanceWindow.deleteMany({ where: { departmentId } })
     await prisma.department.delete({ where: { id: departmentId } })
+  })
+})
+
+test.describe('Attendance requires a fresh QR scan', () => {
+  const email = `e2e-scan-required-${Date.now()}@example.com`
+
+  test.beforeAll(async () => {
+    await createEmployee({ email })
+  })
+
+  test('visiting the page without a scan shows no check-in button', async ({ page }) => {
+    await login(page, email, 'TestPassword123!')
+    // No ?t= param — simulates reopening a bookmark or browser history entry
+    // while still logged in, without having scanned the QR code.
+    await goto(page, '/admin/my-attendance')
+
+    await expect(page.getByRole('button', { name: 'Scan Attendance QR' })).toHaveCount(0)
+    await expect(page.getByText(/scan the attendance qr code.*to check in/i)).toBeVisible()
+  })
+
+  test('a stale or tampered token is rejected server-side even if submitted directly', async ({
+    page,
+  }) => {
+    await login(page, email, 'TestPassword123!')
+    // Load with a currently-valid token so the button renders, then tamper
+    // the hidden field to a token from 10 minutes ago (well outside the
+    // ~60-120s tolerance) before submitting — this exercises the server
+    // action's own check independent of the page's client-visible gating.
+    await goto(page, `/admin/my-attendance?t=${attendanceToken()}`)
+    await page.evaluate((staleToken) => {
+      const input = document.querySelector<HTMLInputElement>('input[name="t"]')
+      if (input) input.value = staleToken
+    }, attendanceToken(10))
+    await page.getByRole('button', { name: 'Scan Attendance QR' }).click()
+
+    await expect(page.getByText(/scan the attendance qr code again/i)).toBeVisible({
+      timeout: 10_000,
+    })
+
+    const user = await prisma.user.findUnique({ where: { email } })
+    const record = await prisma.attendance.findFirst({ where: { userId: user!.id } })
+    expect(record).toBeNull()
+  })
+
+  test.afterAll(async () => {
+    await prisma.user.deleteMany({ where: { email } })
   })
 })
 

@@ -39,7 +39,15 @@ function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: st
  * re-rendering — a revalidatePath driven parent re-render can otherwise swap
  * this component out before its own confirmation ever paints.
  */
-export default function AttendancePanel({ initialRecord }: { initialRecord: Recorded | null }) {
+export default function AttendancePanel({
+  initialRecord,
+  token,
+  tokenValid,
+}: {
+  initialRecord: Recorded | null
+  token: string | null
+  tokenValid: boolean
+}) {
   const t = useAdminT().myAttendance
   const [record, setRecord] = useState<Recorded | null>(initialRecord)
   const [justRecorded, setJustRecorded] = useState<'in' | 'out' | null>(null)
@@ -112,10 +120,19 @@ export default function AttendancePanel({ initialRecord }: { initialRecord: Reco
           </p>
         </div>
 
-        <p className="text-sm text-neutral-400">{t.departurePrompt}</p>
-        <form action={checkOutFormAction}>
-          <SubmitButton label={t.signOut} pendingLabel={t.recordingOut} />
-        </form>
+        {tokenValid ? (
+          <>
+            <p className="text-sm text-neutral-400">{t.departurePrompt}</p>
+            <form action={checkOutFormAction}>
+              <input type="hidden" name="t" value={token ?? ''} />
+              <SubmitButton label={t.signOut} pendingLabel={t.recordingOut} />
+            </form>
+          </>
+        ) : (
+          <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+            {t.scanRequiredOut}
+          </div>
+        )}
         {checkOutState.error ? (
           <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
             {checkOutState.error}
@@ -127,10 +144,19 @@ export default function AttendancePanel({ initialRecord }: { initialRecord: Reco
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-neutral-400">{t.prompt}</p>
-      <form action={checkInFormAction}>
-        <SubmitButton label={t.scan} pendingLabel={t.recording} />
-      </form>
+      {tokenValid ? (
+        <>
+          <p className="text-sm text-neutral-400">{t.prompt}</p>
+          <form action={checkInFormAction}>
+            <input type="hidden" name="t" value={token ?? ''} />
+            <SubmitButton label={t.scan} pendingLabel={t.recording} />
+          </form>
+        </>
+      ) : (
+        <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          {t.scanRequired}
+        </div>
+      )}
       {checkInState.error ? (
         <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
           {checkInState.error}
