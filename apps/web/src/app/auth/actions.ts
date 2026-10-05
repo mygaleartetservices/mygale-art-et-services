@@ -4,12 +4,29 @@ import crypto from 'crypto'
 import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import bcrypt from 'bcryptjs'
+import nodemailer from 'nodemailer'
 import prisma from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
 import { writeAuditLog } from '@/lib/revisions'
-import { getClientIp, isRateLimited, recordFailedAttempt } from '@/lib/rateLimit'
+import { escapeHtml } from '@/lib/escapeHtml'
+import { getClientIp, isRateLimited, rateLimit, recordFailedAttempt } from '@/lib/rateLimit'
 
 const SESSION_TTL_DAYS = 30
+
+// Password-reset links are single-use and short-lived — long enough for
+// someone to receive and act on the email, short enough to limit the damage
+// if an inbox is compromised later.
+const RESET_TOKEN_TTL_MS = 60 * 60_000
+
+// These endpoints aren't credential brute-forcing targets the way /login is
+// (the token is a 32-byte random value, and the request form doesn't accept
+// a password), but both are still rate-limited to blunt scripted abuse
+// (email-bombing an address via the request form, or scripted guesses
+// against the reset form).
+const PASSWORD_RESET_REQUEST_LIMIT = 5
+const PASSWORD_RESET_REQUEST_WINDOW_MS = 60 * 60_000
+const PASSWORD_RESET_SUBMIT_LIMIT = 10
+const PASSWORD_RESET_SUBMIT_WINDOW_MS = 60 * 60_000
 
 // 10 *failed* attempts per 15 minutes per client IP, to slow down credential
 // brute-forcing without locking out legitimate users on a shared IP. Only
@@ -30,6 +47,7 @@ function asString(value: FormDataEntryValue | null) {
 
 type ActionState = {
   error?: string
+  success?: string
 }
 
 export async function signInWithPassword(_prevState: ActionState, formData: FormData) {
@@ -122,4 +140,146 @@ export async function signOut() {
   }
 
   redirect('/login')
+}
+
+// Same message whether or not the email matches an account — a reset form
+// that says "no account with that email" is a trivial way to enumerate
+// every registered address.
+const GENERIC_RESET_REQUEST_MESSAGE =
+  "If an account exists for that email, we've sent a password reset link."
+
+export async function requestPasswordReset(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const headerStore = await headers()
+  const clientIp = getClientIp(headerStore)
+  const rate = rateLimit(
+    `password-reset-request:${clientIp}`,
+    PASSWORD_RESET_REQUEST_LIMIT,
+    PASSWORD_RESET_REQUEST_WINDOW_MS,
+  )
+  if (!rate.success) {
+    return { error: 'Too many requests. Please try again later.' }
+  }
+
+  const email = normalizeEmail(formData.get('email'))
+  if (!email) {
+    return { error: 'Email is required.' }
+  }
+
+  const user = await prisma.user.findUnique({ where: { email } })
+
+  // Only accounts that can actually sign in with a password get a reset
+  // link — mirrors the same guard signInWithPassword uses.
+  if (user && user.role && user.passwordHash && user.active) {
+    const token = crypto.randomBytes(32).toString('hex')
+    const now = new Date()
+    const expiresAt = new Date(now.getTime() + RESET_TOKEN_TTL_MS)
+
+    // Drop any outstanding tokens for this address first, so only the
+    // most recently requested link is ever valid.
+    await prisma.verification.deleteMany({ where: { identifier: email } })
+    await prisma.verification.create({
+      data: {
+        id: crypto.randomUUID(),
+        identifier: email,
+        value: token,
+        expiresAt,
+        createdAt: now,
+        updatedAt: now,
+      },
+    })
+
+    const baseUrl = (
+      process.env.FRONTEND_URL ||
+      process.env.NEXTAUTH_URL ||
+      'http://localhost:3000'
+    ).replace(/\/$/, '')
+    const resetUrl = `${baseUrl}/reset-password?token=${token}`
+
+    try {
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT),
+        secure: true,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      })
+
+      await transporter.sendMail({
+        from: process.env.EMAIL_FROM,
+        to: user.email,
+        subject: 'Reset your password',
+        text: `We received a request to reset your password.\n\nReset it here (expires in 1 hour):\n${resetUrl}\n\nIf you didn't request this, you can ignore this email.`,
+        html: `<p>We received a request to reset your password.</p><p><a href="${escapeHtml(resetUrl)}">Reset your password</a> (expires in 1 hour).</p><p>If you didn't request this, you can ignore this email.</p>`,
+      })
+    } catch (emailError) {
+      console.error('[requestPasswordReset] Email send failed:', emailError)
+    }
+
+    await writeAuditLog(
+      'auth.password_reset_requested',
+      { entityType: 'User', entityId: user.id },
+      user.id,
+    )
+  }
+
+  return { success: GENERIC_RESET_REQUEST_MESSAGE }
+}
+
+export async function resetPassword(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const headerStore = await headers()
+  const clientIp = getClientIp(headerStore)
+  const rate = rateLimit(
+    `password-reset-submit:${clientIp}`,
+    PASSWORD_RESET_SUBMIT_LIMIT,
+    PASSWORD_RESET_SUBMIT_WINDOW_MS,
+  )
+  if (!rate.success) {
+    return { error: 'Too many requests. Please try again later.' }
+  }
+
+  const token = asString(formData.get('token'))
+  const password = asString(formData.get('password'))
+  const confirmPassword = asString(formData.get('confirmPassword'))
+
+  if (!token) {
+    return { error: 'This password reset link is invalid or has expired.' }
+  }
+  if (!password || password.length < 8) {
+    return { error: 'Password must be at least 8 characters.' }
+  }
+  if (password !== confirmPassword) {
+    return { error: 'Passwords do not match.' }
+  }
+
+  const verification = await prisma.verification.findFirst({ where: { value: token } })
+  if (!verification || verification.expiresAt <= new Date()) {
+    return { error: 'This password reset link is invalid or has expired.' }
+  }
+
+  const user = await prisma.user.findUnique({ where: { email: verification.identifier } })
+  if (!user || !user.active) {
+    return { error: 'This password reset link is invalid or has expired.' }
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10)
+
+  await prisma.user.update({ where: { id: user.id }, data: { passwordHash } })
+  // The token is single-use; also clear any other outstanding tokens for
+  // this address left over from earlier requests.
+  await prisma.verification.deleteMany({ where: { identifier: verification.identifier } })
+  // A password reset is a strong signal the old sessions may not be trusted
+  // (e.g. the account may have been compromised) — sign out everywhere.
+  await prisma.session.deleteMany({ where: { userId: user.id } })
+
+  await writeAuditLog('auth.password_reset', { entityType: 'User', entityId: user.id }, user.id)
+
+  return { success: 'Your password has been reset. You can now sign in.' }
 }

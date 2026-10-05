@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
+import Link from 'next/link'
 import { signInWithPassword } from './actions'
 
 const initialState = { error: '' as string | undefined }
@@ -87,6 +88,11 @@ export default function LoginForm() {
               </svg>
             )}
           </button>
+        </div>
+        <div className="mt-2 text-right">
+          <Link href="/forgot-password" className="text-sm text-[#003366] underline">
+            Forgot password?
+          </Link>
         </div>
       </div>
 
