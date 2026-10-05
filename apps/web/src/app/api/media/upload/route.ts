@@ -36,6 +36,8 @@ const ALLOWED_MIME_TO_EXT: Record<string, string> = {
   'image/gif': 'gif',
   'image/svg+xml': 'svg',
   'application/pdf': 'pdf',
+  'video/mp4': 'mp4',
+  'video/webm': 'webm',
 }
 
 // Folder is a caller-supplied logical prefix for the S3 key. Restrict it to

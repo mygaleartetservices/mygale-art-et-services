@@ -780,6 +780,8 @@ const blog = {
     publishedCheckbox: 'Publié',
     publishedAt: 'Date de publication',
     markdownContent: 'Contenu Markdown *',
+    videoHint:
+      'Pour intégrer une vidéo : collez un extrait d\'intégration YouTube ou Vimeo (<iframe src="https://www.youtube.com/embed/...">), ou téléversez un fichier vidéo dans la Médiathèque puis collez <video src="..." controls></video> avec son URL.',
     livePreview: 'Aperçu en direct',
     previewPlaceholder: "Commencez à écrire pour voir un aperçu...",
     createButton: 'Créer l\'article',
@@ -818,6 +820,8 @@ const blog = {
     publishedCheckbox: 'Published',
     publishedAt: 'Published At',
     markdownContent: 'Markdown Content *',
+    videoHint:
+      'To embed a video: paste a YouTube or Vimeo embed snippet (<iframe src="https://www.youtube.com/embed/...">), or upload a video file in the Media Library and paste <video src="..." controls></video> with its URL.',
     livePreview: 'Live Preview',
     previewPlaceholder: 'Start writing to see a preview...',
     createButton: 'Create Post',

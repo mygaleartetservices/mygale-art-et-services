@@ -305,6 +305,7 @@ export default function BlogPostForm({
             onChange={(e) => setContent(e.target.value)}
             required
           />
+          <p className="mt-1 text-xs text-neutral-500">{t.videoHint}</p>
         </div>
         <div>
           <div className="text-sm text-neutral-300">{t.livePreview}</div>

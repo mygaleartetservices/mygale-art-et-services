@@ -40,3 +40,29 @@ test('Login: valid credentials redirect to /admin', async ({ page }) => {
   await page.waitForURL('**/admin')
   await expect(page.locator('h1')).toContainText('Admin Dashboard')
 })
+
+// Regression test: the login rate limiter (10 attempts/15min/IP) used to
+// count every attempt, successful or not — so e.g. 20 employees signing in
+// from behind one shared office IP around the same time would see more
+// than 10 of them hard-rejected with "Too many login attempts," even though
+// every single one of them typed the right password. Fixed to only count
+// failed attempts. This logs in more than the old limit, back-to-back, with
+// correct credentials every time, and expects every one to succeed.
+test('Login: many successful logins in a row from the same IP never trip the rate limiter', async ({
+  page,
+}) => {
+  test.skip(!process.env.E2E_ADMIN_EMAIL || !process.env.E2E_ADMIN_PASSWORD, 'E2E_ADMIN_EMAIL/E2E_ADMIN_PASSWORD not set')
+
+  const ATTEMPTS = 12 // > the 10/15min limit
+
+  for (let i = 0; i < ATTEMPTS; i++) {
+    await page.goto('http://localhost:3000/login')
+    await typeCredentials(page, process.env.E2E_ADMIN_EMAIL!, process.env.E2E_ADMIN_PASSWORD!)
+    await page.getByRole('button', { name: 'Sign in' }).click()
+    await page.waitForURL('**/admin', { timeout: 15_000 })
+
+    // Drop the session so the next loop iteration goes through the login
+    // form again instead of an already-authenticated redirect.
+    await page.context().clearCookies()
+  }
+})

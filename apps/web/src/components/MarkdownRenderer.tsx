@@ -2,13 +2,17 @@
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
-import { markdownComponents, markdownSanitizeSchema } from '@/lib/markdown'
+import { markdownComponents, markdownSanitizeSchema, rehypeRestrictIframeEmbeds } from '@/lib/markdown'
 
 export default function MarkdownRenderer({ content }: { content: string }) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeRaw, [rehypeSanitize, markdownSanitizeSchema]]}
+      rehypePlugins={[
+        rehypeRaw,
+        rehypeRestrictIframeEmbeds,
+        [rehypeSanitize, markdownSanitizeSchema],
+      ]}
       components={markdownComponents}
     >
       {content}
