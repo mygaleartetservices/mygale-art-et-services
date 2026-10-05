@@ -40,7 +40,7 @@ export default function MediaUploadWidget() {
         <label className="text-xs text-neutral-400">{t.uploadFilesLabel}</label>
         <input
           type="file"
-          accept="image/*"
+          accept="image/*,video/mp4,video/webm"
           multiple
           onChange={handleUpload}
           disabled={uploading}

@@ -98,12 +98,16 @@ export default async function AdminMediaPage({
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {items.map((item) => (
           <div key={item.id} className="rounded-lg border border-neutral-800 p-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={item.thumbnailUrl || item.url}
-              alt={item.altFr || item.key}
-              className="h-28 w-full rounded object-cover"
-            />
+            {item.mimeType?.startsWith('video/') ? (
+              <video src={item.url} className="h-28 w-full rounded object-cover" muted />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={item.thumbnailUrl || item.url}
+                alt={item.altFr || item.key}
+                className="h-28 w-full rounded object-cover"
+              />
+            )}
             <div className="mt-2 truncate text-xs text-neutral-400" title={item.key}>
               {item.key}
             </div>
