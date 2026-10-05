@@ -2,10 +2,17 @@ import prisma from '@/lib/prisma'
 import { requireRole } from '@/lib/auth'
 import { calendarDate } from '@/lib/timezone'
 import { getAdminT } from '@/lib/getLocale'
+import { verifyAttendanceToken } from '@/lib/attendanceQr'
 import AttendancePanel from './AttendancePanel'
 
-export default async function MyAttendancePage() {
+export default async function MyAttendancePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ t?: string }>
+}) {
   const user = await requireRole('USER')
+  const { t: token } = await searchParams
+  const tokenValid = verifyAttendanceToken(token)
 
   const [today, department, jobRole, adminT] = await Promise.all([
     prisma.attendance.findUnique({
@@ -39,6 +46,8 @@ export default async function MyAttendancePage() {
                 }
               : null
           }
+          token={token ?? null}
+          tokenValid={tokenValid}
         />
       </div>
     </div>

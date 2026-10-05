@@ -428,11 +428,11 @@ const attendanceConfig = {
 const attendanceQr = {
   fr: {
     title: 'Code QR de présence',
-    body: "Imprimez et affichez ceci à l'entrée. Tout employé connecté qui scanne ce code est dirigé vers sa propre page de présence — le code lui-même n'identifie personne, donc le même code fonctionne pour tous les départements et postes.",
+    body: "Affichez ceci sur un écran à l'entrée — pas sur papier : le code change automatiquement toutes les minutes, donc une copie imprimée cesse rapidement de fonctionner. Chaque employé doit scanner le code à chaque arrivée et à chaque départ ; le fait d'être déjà connecté ne suffit pas. Le code lui-même n'identifie personne, donc le même code fonctionne pour tous les départements et postes.",
   },
   en: {
     title: 'Attendance QR Code',
-    body: "Print and display this at the entrance. Any logged-in employee who scans it is taken to their own attendance page — the code itself doesn't identify anyone, so the same code works for every department and role.",
+    body: "Display this on a screen at the entrance — not on paper: the code rotates automatically every minute, so a printed copy stops working quickly. Every employee must scan it on both arrival and departure; being logged in isn't enough on its own. The code itself doesn't identify anyone, so the same code works for every department and role.",
   },
 }
 
@@ -1281,8 +1281,11 @@ const myAttendance = {
     noDepartment: 'Aucun département assigné',
     scan: 'Scanner le code de présence',
     recording: 'Enregistrement...',
-    prompt:
-      "Vous n'avez pas encore pointé aujourd'hui. Scannez le code QR de présence à l'entrée, ou appuyez sur le bouton ci-dessous si vous avez suivi un lien.",
+    prompt: "Vous n'avez pas encore pointé aujourd'hui.",
+    scanRequired:
+      "Scannez le code QR de présence à l'entrée pour pointer votre arrivée. Être connecté ne suffit pas — un scan récent est requis.",
+    scanRequiredOut:
+      'Scannez à nouveau le code QR de présence pour pointer votre départ. Être connecté ne suffit pas — un scan récent est requis.',
     recordedNow: 'Présence enregistrée avec succès.',
     recordedAlready: "Votre présence d'aujourd'hui est enregistrée.",
     arrival: 'Arrivée :',
@@ -1303,8 +1306,11 @@ const myAttendance = {
     noDepartment: 'No department assigned',
     scan: 'Scan Attendance QR',
     recording: 'Recording...',
-    prompt:
-      "You haven't checked in today. Scan the attendance QR code at the entrance, or tap the button below if you followed a link from it.",
+    prompt: "You haven't checked in today.",
+    scanRequired:
+      "Scan the attendance QR code at the entrance to check in. Being logged in isn't enough — a recent scan is required.",
+    scanRequiredOut:
+      "Scan the attendance QR code again to check out. Being logged in isn't enough — a recent scan is required.",
     recordedNow: 'Attendance recorded successfully.',
     recordedAlready: "Today's attendance is recorded.",
     arrival: 'Arrival:',
