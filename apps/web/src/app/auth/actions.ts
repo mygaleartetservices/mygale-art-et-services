@@ -7,12 +7,16 @@ import bcrypt from 'bcryptjs'
 import prisma from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
 import { writeAuditLog } from '@/lib/revisions'
-import { getClientIp, rateLimit } from '@/lib/rateLimit'
+import { getClientIp, isRateLimited, recordFailedAttempt } from '@/lib/rateLimit'
 
 const SESSION_TTL_DAYS = 30
 
-// 10 attempts per 15 minutes per client IP, to slow down credential
-// brute-forcing without locking out legitimate users on a shared IP.
+// 10 *failed* attempts per 15 minutes per client IP, to slow down credential
+// brute-forcing without locking out legitimate users on a shared IP. Only
+// wrong-credential attempts consume this budget (see recordFailedAttempt
+// calls below) — a shared office network with many employees signing in
+// with correct passwords around the same time never trips it, no matter how
+// many of them there are.
 const LOGIN_RATE_LIMIT = 10
 const LOGIN_RATE_WINDOW_MS = 15 * 60_000
 
@@ -31,8 +35,8 @@ type ActionState = {
 export async function signInWithPassword(_prevState: ActionState, formData: FormData) {
   const headerStoreForRateLimit = await headers()
   const clientIp = getClientIp(headerStoreForRateLimit)
-  const rate = rateLimit(`login:${clientIp}`, LOGIN_RATE_LIMIT, LOGIN_RATE_WINDOW_MS)
-  if (!rate.success) {
+  const rateLimitKey = `login:${clientIp}`
+  if (isRateLimited(rateLimitKey, LOGIN_RATE_LIMIT)) {
     return { error: 'Too many login attempts. Please try again later.' }
   }
 
@@ -50,6 +54,7 @@ export async function signInWithPassword(_prevState: ActionState, formData: Form
   // Any account with a role can sign in — which admin pages they can actually
   // see from there is governed by hasPageAccess() (see admin/layout.tsx).
   if (!user || !user.role || !user.passwordHash || !user.active) {
+    recordFailedAttempt(rateLimitKey, LOGIN_RATE_LIMIT, LOGIN_RATE_WINDOW_MS)
     return { error: 'Invalid credentials.' }
   }
 
@@ -61,6 +66,7 @@ export async function signInWithPassword(_prevState: ActionState, formData: Form
   }
 
   if (!validPassword) {
+    recordFailedAttempt(rateLimitKey, LOGIN_RATE_LIMIT, LOGIN_RATE_WINDOW_MS)
     return { error: 'Invalid credentials.' }
   }
 

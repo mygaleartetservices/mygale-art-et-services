@@ -63,6 +63,24 @@ export function rateLimit(key: string, limit: number, windowMs: number): RateLim
 }
 
 /**
+ * Read-only check: true if `key` has already hit `limit` for its current
+ * window, without consuming an attempt. Used to reject a request before
+ * doing any real work (e.g. a bcrypt compare) when the caller intends to
+ * record the attempt separately, only on the failure path — see
+ * `recordFailedAttempt` below.
+ */
+export function isRateLimited(key: string, limit: number): boolean {
+  const bucket = buckets.get(key)
+  if (!bucket || bucket.resetAt <= Date.now()) return false
+  return bucket.count >= limit
+}
+
+/** Consumes one attempt from `key`'s bucket — see `isRateLimited` above. */
+export function recordFailedAttempt(key: string, limit: number, windowMs: number): void {
+  rateLimit(key, limit, windowMs)
+}
+
+/**
  * Best-effort client identifier from request headers. Trusts
  * `x-forwarded-for` (set by the platform's proxy/CDN) and falls back to a
  * shared bucket key when no client IP is available.
