@@ -122,7 +122,20 @@ export async function signInWithPassword(_prevState: ActionState, formData: Form
 
   await writeAuditLog('auth.login', { entityType: 'User', entityId: user.id }, user.id)
 
-  redirect('/admin')
+  redirect(safeAdminRedirect(formData.get('next')))
+}
+
+// requireRole() (lib/auth.ts) passes the page an unauthenticated visitor was
+// trying to reach back here as `next`, so e.g. a QR check-in link opened
+// while logged out still lands on the check-in button after signing in,
+// instead of the bare dashboard. Only ever follow it into our own /admin
+// tree — formData is attacker-controllable, so without this an open
+// redirect (`next=https://evil.example`) would be possible.
+function safeAdminRedirect(next: FormDataEntryValue | null): string {
+  if (typeof next !== 'string' || !next.startsWith('/admin') || next.startsWith('//')) {
+    return '/admin'
+  }
+  return next
 }
 
 export async function signOut() {

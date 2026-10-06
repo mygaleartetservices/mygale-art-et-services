@@ -39,6 +39,10 @@ export async function middleware(req: NextRequest) {
     const section = pathname.split('/').filter(Boolean)[1] ?? OVERVIEW_SECTION_KEY
     const requestHeaders = new Headers(req.headers)
     requestHeaders.set('x-admin-section', section)
+    // Lets requireRole() send an unauthenticated visitor back to the exact
+    // page (and query string — e.g. a QR check-in token) they were trying
+    // to reach, instead of always bouncing to the bare /admin dashboard.
+    requestHeaders.set('x-pathname', pathname + req.nextUrl.search)
     return NextResponse.next({ request: { headers: requestHeaders } })
   }
 

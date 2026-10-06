@@ -259,6 +259,39 @@ test.describe('Attendance requires a fresh QR scan', () => {
     await expect(page.getByText(/scan the attendance qr code.*to check in/i)).toBeVisible()
   })
 
+  test('scanning the QR while logged out returns to the check-in button after signing in', async ({
+    page,
+  }) => {
+    // Regression test: requireRole() used to always bounce an unauthenticated
+    // visitor to a bare /login, dropping the QR token — so anyone whose
+    // session had expired (or who was scanning for the first time that day)
+    // would land on the bare /admin dashboard after signing in, then hit
+    // this same "scan required" dead end again once they navigated to My
+    // Attendance by hand, with no token and no way to proceed.
+    // Pin English for the same reason login() does — this test deliberately
+    // doesn't call login() (the whole point is to arrive logged out), so it
+    // has to set the locale cookie itself.
+    await page
+      .context()
+      .addCookies([{ name: 'NEXT_LOCALE', value: 'en', domain: 'localhost', path: '/' }])
+
+    const token = attendanceToken()
+    await goto(page, `/admin/my-attendance?t=${token}`)
+
+    await expect(page).toHaveURL(
+      new RegExp(`/login\\?next=${encodeURIComponent(`/admin/my-attendance?t=${token}`)}$`),
+    )
+
+    await page.locator('#login-email').click()
+    await page.locator('#login-email').pressSequentially(email, { delay: 5 })
+    await page.locator('#login-password').click()
+    await page.locator('#login-password').pressSequentially('TestPassword123!', { delay: 5 })
+    await page.getByRole('button', { name: 'Sign in' }).click()
+
+    await page.waitForURL(`**/admin/my-attendance?t=${token}`)
+    await expect(page.getByRole('button', { name: 'Scan Attendance QR' })).toBeVisible()
+  })
+
   test('a stale or tampered token is rejected server-side even if submitted directly', async ({
     page,
   }) => {
