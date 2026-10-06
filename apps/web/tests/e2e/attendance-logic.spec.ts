@@ -7,6 +7,7 @@ import {
   parseTimeToMinutes,
   zonedTimeToInstant,
 } from '@/lib/timezone'
+import { extractAttendanceToken } from '@/lib/qrToken'
 
 // Pure domain-logic tests — no DB, no dev server, no browser page needed.
 // Africa/Douala is UTC+1 year-round (no DST), so "HH:mm+01:00" is exact.
@@ -84,5 +85,22 @@ test.describe('time parsing/formatting round-trip', () => {
   test('zonedTimeToInstant rejects a malformed date or time', () => {
     expect(zonedTimeToInstant('01-05-2026', '08:17')).toBeNull()
     expect(zonedTimeToInstant('2026-01-05', '25:00')).toBeNull()
+  })
+})
+
+test.describe('extractAttendanceToken (in-app QR scanner)', () => {
+  test('pulls the t= token out of a scanned check-in URL', () => {
+    expect(extractAttendanceToken('https://example.org/admin/my-attendance?t=abc123')).toBe(
+      'abc123',
+    )
+  })
+
+  test('returns null when the decoded QR has no t= param', () => {
+    expect(extractAttendanceToken('https://example.org/admin/my-attendance')).toBeNull()
+  })
+
+  test('returns null when the decoded QR is not a URL at all', () => {
+    expect(extractAttendanceToken('not a url')).toBeNull()
+    expect(extractAttendanceToken('')).toBeNull()
   })
 })

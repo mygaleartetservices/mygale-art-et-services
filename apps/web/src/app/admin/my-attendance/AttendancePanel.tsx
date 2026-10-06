@@ -5,6 +5,7 @@ import { useFormStatus } from 'react-dom'
 import { checkInAttendance, checkOutAttendance } from './actions'
 import { formatClockTime } from '@/lib/timezone'
 import { useAdminT } from '@/lib/locale'
+import QrScanner from './QrScanner'
 
 type Recorded = { arrivalAt: string; status: 'ON_TIME' | 'LATE'; departureAt: string | null }
 
@@ -129,8 +130,11 @@ export default function AttendancePanel({
             </form>
           </>
         ) : (
-          <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-            {t.scanRequiredOut}
+          <div className="space-y-3">
+            <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+              {t.scanRequiredOut}
+            </div>
+            <QrScanner />
           </div>
         )}
         {checkOutState.error ? (
@@ -153,8 +157,11 @@ export default function AttendancePanel({
           </form>
         </>
       ) : (
-        <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-          {t.scanRequired}
+        <div className="space-y-3">
+          <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+            {t.scanRequired}
+          </div>
+          <QrScanner />
         </div>
       )}
       {checkInState.error ? (
