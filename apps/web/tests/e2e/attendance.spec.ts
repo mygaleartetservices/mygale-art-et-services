@@ -257,6 +257,31 @@ test.describe('Attendance requires a fresh QR scan', () => {
 
     await expect(page.getByRole('button', { name: 'Scan Attendance QR' })).toHaveCount(0)
     await expect(page.getByText(/scan the attendance qr code.*to check in/i)).toBeVisible()
+    // The in-app camera scanner (QrScanner.tsx) is offered as an alternative
+    // to a phone's native camera app for exactly this situation.
+    await expect(page.getByRole('button', { name: 'Scan with camera' })).toBeVisible()
+  })
+
+  test('the in-app camera scanner opens and can be cancelled', async ({ page }) => {
+    // playwright.config.ts launches Chrome with --use-fake-device-for-media-stream
+    // so getUserMedia succeeds deterministically here with a synthetic feed
+    // (no real QR code encoded in it) — this covers the scanner's open/close
+    // UI plumbing. The actual decode logic is covered separately and
+    // directly by the extractAttendanceToken unit tests in
+    // attendance-logic.spec.ts, rather than trying to feed a real
+    // QR-encoded video into a fake camera here.
+    await login(page, email, 'TestPassword123!')
+    await goto(page, '/admin/my-attendance')
+
+    await page.getByRole('button', { name: 'Scan with camera' }).click()
+    await expect(page.locator('video')).toBeVisible()
+    await expect(
+      page.getByText('Point the camera at the attendance QR code displayed at the entrance.'),
+    ).toBeVisible()
+
+    await page.getByRole('button', { name: 'Cancel' }).click()
+    await expect(page.locator('video')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Scan with camera' })).toBeVisible()
   })
 
   test('scanning the QR while logged out returns to the check-in button after signing in', async ({

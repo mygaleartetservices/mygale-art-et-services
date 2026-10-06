@@ -1290,6 +1290,14 @@ const myAttendance = {
       "Scannez le code QR de présence à l'entrée pour pointer votre arrivée. Être connecté ne suffit pas — un scan récent est requis.",
     scanRequiredOut:
       'Scannez à nouveau le code QR de présence pour pointer votre départ. Être connecté ne suffit pas — un scan récent est requis.',
+    openScanner: 'Scanner avec la caméra',
+    scannerOpening: 'Ouverture de la caméra...',
+    scannerHint: 'Pointez la caméra vers le code QR de présence affiché à l’entrée.',
+    scannerCancel: 'Annuler',
+    scannerCameraError:
+      "Impossible d'accéder à la caméra. Vérifiez les autorisations de votre navigateur, ou utilisez l'appareil photo de votre téléphone pour scanner le code directement.",
+    scannerNotFound:
+      "Le code scanné n'est pas un code de présence valide. Réessayez avec le code affiché à l'entrée.",
     recordedNow: 'Présence enregistrée avec succès.',
     recordedAlready: "Votre présence d'aujourd'hui est enregistrée.",
     arrival: 'Arrivée :',
@@ -1315,6 +1323,13 @@ const myAttendance = {
       "Scan the attendance QR code at the entrance to check in. Being logged in isn't enough — a recent scan is required.",
     scanRequiredOut:
       "Scan the attendance QR code again to check out. Being logged in isn't enough — a recent scan is required.",
+    openScanner: 'Scan with camera',
+    scannerOpening: 'Opening camera...',
+    scannerHint: 'Point the camera at the attendance QR code displayed at the entrance.',
+    scannerCancel: 'Cancel',
+    scannerCameraError:
+      "Couldn't access the camera. Check your browser's camera permissions, or use your phone's camera app to scan the code directly.",
+    scannerNotFound: "That's not a valid attendance code. Try again with the code at the entrance.",
     recordedNow: 'Attendance recorded successfully.',
     recordedAlready: "Today's attendance is recorded.",
     arrival: 'Arrival:',
