@@ -40,7 +40,7 @@ export default function ServiceClient({ service, locale, sidebarServices }: Prop
       className="max-w-6xl mx-auto px-4 py-16"
     >
       {/* Breadcrumbs */}
-      <nav className="text-sm text-gray-500 mb-6">
+      <nav className="text-sm text-ink-muted mb-6">
         <Link href="/" className="hover:underline">
           {locale === 'fr' ? 'Accueil' : 'Home'}
         </Link>
@@ -49,7 +49,7 @@ export default function ServiceClient({ service, locale, sidebarServices }: Prop
           {locale === 'fr' ? 'Nos services' : 'Our services'}
         </Link>
         <span className="mx-2">/</span>
-        <span className="text-gray-700">{title}</span>
+        <span className="text-ink-muted">{title}</span>
       </nav>
 
       {/* Main layout: content + sidebar */}
@@ -60,8 +60,8 @@ export default function ServiceClient({ service, locale, sidebarServices }: Prop
           <div className="mb-8">
             <div className="md:flex md:items-start md:gap-6">
               <div className="md:flex-1">
-                <h1 className="text-4xl font-bold text-[#003366] mb-4">{title}</h1>
-                <p className="text-gray-700 leading-relaxed">{desc}</p>
+                <h1 className="text-4xl font-bold text-ink mb-4">{title}</h1>
+                <p className="text-ink-muted leading-relaxed">{desc}</p>
               </div>
 
               {/* supporting image on right (desktop) / below on mobile */}
@@ -88,16 +88,16 @@ export default function ServiceClient({ service, locale, sidebarServices }: Prop
                 <div key={block.id} className="md:grid md:grid-cols-2 md:gap-6 items-start">
                   {/* text */}
                   <div>
-                    <h2 className="text-2xl font-semibold text-[#003366] mb-3">{blockTitle}</h2>
+                    <h2 className="text-2xl font-semibold text-ink mb-3">{blockTitle}</h2>
                     {block.type === 'BULLET_LIST' ? (
-                      <ul className="list-disc list-inside text-gray-700 space-y-1">
+                      <ul className="list-disc list-inside text-ink-muted space-y-1">
                         {blockItems.map((it, idx) => (
                           <li key={idx}>{it}</li>
                         ))}
                       </ul>
                     ) : (
                       <div
-                        className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
+                        className="prose prose-sm max-w-none text-ink-muted leading-relaxed"
                         dangerouslySetInnerHTML={{
                           __html: pick(locale, block.bodyFr, block.bodyEn),
                         }}

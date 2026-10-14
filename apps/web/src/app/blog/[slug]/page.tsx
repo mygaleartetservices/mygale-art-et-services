@@ -69,7 +69,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const dateLocale = post.locale === 'en' ? 'en-US' : 'fr-FR'
 
   return (
-    <article className="bg-white text-black">
+    <article className="bg-surface text-black">
       {post.coverImage && (
         <div className="relative h-80 md:h-105 w-full">
           <Image
@@ -102,7 +102,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <div className="max-w-4xl mx-auto px-4 py-12">
         {!post.coverImage && (
           <header className="mb-8">
-            <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
+            <p className="text-xs uppercase tracking-[0.2em] text-ink-muted">
               {post.publishedAt
                 ? new Intl.DateTimeFormat(dateLocale, { dateStyle: 'long' }).format(
                     post.publishedAt,
@@ -112,26 +112,26 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <h1 className="mt-3 text-3xl md:text-4xl font-semibold leading-tight text-neutral-900">
               {post.title}
             </h1>
-            {post.excerpt ? <p className="mt-4 text-gray-600 max-w-3xl">{post.excerpt}</p> : null}
+            {post.excerpt ? <p className="mt-4 text-ink-muted max-w-3xl">{post.excerpt}</p> : null}
           </header>
         )}
 
         {post.category || post.tags.length > 0 || translation ? (
           <div className="mb-8 flex flex-wrap items-center gap-2 text-xs">
             {post.category ? (
-              <span className="rounded-full bg-[#003366]/10 px-3 py-1 font-semibold text-[#003366]">
+              <span className="rounded-full bg-primary/10 px-3 py-1 font-semibold text-ink">
                 {post.locale === 'en' ? post.category.nameEn : post.category.nameFr}
               </span>
             ) : null}
             {post.tags.map((tag) => (
-              <span key={tag.id} className="rounded-full border px-3 py-1 text-gray-500">
+              <span key={tag.id} className="rounded-full border px-3 py-1 text-ink-muted">
                 #{post.locale === 'en' ? tag.nameEn : tag.nameFr}
               </span>
             ))}
             {translation ? (
               <Link
                 href={`/blog/${translation.slug}`}
-                className="ml-auto rounded-full border border-[#003366] px-3 py-1 font-semibold text-[#003366] hover:bg-[#003366] hover:text-white transition"
+                className="ml-auto rounded-full border border-primary px-3 py-1 font-semibold text-ink hover:bg-primary hover:text-white transition"
               >
                 {translation.locale === 'en' ? 'Read in English' : 'Lire en français'}
               </Link>
@@ -142,7 +142,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         <MarkdownRenderer content={post.content} />
 
         <div className="mt-12 border-t pt-6">
-          <Link href={`/blog?lang=${post.locale}`} className="text-sm font-semibold text-[#003366]">
+          <Link href={`/blog?lang=${post.locale}`} className="text-sm font-semibold text-ink">
             {'<- Back to Blog'}
           </Link>
         </div>

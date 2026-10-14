@@ -1,11 +1,13 @@
 import '../styles/globals.css'
 import React, { Suspense } from 'react'
 import type { Metadata } from 'next'
+import { Instrument_Sans, Unbounded } from 'next/font/google'
 import { LocaleProvider } from '@/lib/locale'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import Image from 'next/image'
-import PageTransitions from '@/components/PageTransitions' // client wrapper for AnimatePresence
+import MotionProvider from '@/components/motion/MotionProvider'
+import SmoothScroll from '@/components/motion/SmoothScroll'
+import RouteProgress from '@/components/motion/RouteProgress'
 import { Analytics } from '@vercel/analytics/next'
 import AnnouncementBanner from '@/components/AnnouncementBanner'
 import { getLocale } from '@/lib/getLocale'
@@ -14,6 +16,11 @@ import { getNavigationItems } from '@/lib/queries/navigation'
 import { getPublishedServices } from '@/lib/queries/services'
 import { getSocialLinks } from '@/lib/queries/socialLinks'
 import { buildOrganizationJsonLd, jsonLdScript } from '@/lib/jsonLd'
+
+// Type roles from DESIGN.md: wide atelier capitals for display, a neutral
+// sans with full French diacritics for text.
+const unbounded = Unbounded({ subsets: ['latin'], variable: '--font-unbounded', display: 'swap' })
+const instrument = Instrument_Sans({ subsets: ['latin'], variable: '--font-instrument', display: 'swap' })
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
@@ -62,13 +69,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   })
 
   return (
-    <html lang={locale}>
-      <body className="bg-white text-black antialiased">
+    <html lang={locale} className={`${unbounded.variable} ${instrument.variable}`}>
+      <body className="bg-canvas text-ink antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: jsonLdScript(organizationJsonLd) }}
         />
         <LocaleProvider initialLang={locale}>
+          <MotionProvider>
+          <RouteProgress />
+          <SmoothScroll />
           <div className="min-h-screen flex flex-col">
             <Suspense fallback={<div className="min-h-12" aria-hidden />}>
               <AnnouncementBanner />
@@ -76,29 +86,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Navbar
               navItems={navItems}
               services={services.map((s) => ({ slug: s.slug, titleFr: s.titleFr, titleEn: s.titleEn }))}
+              whatsapp={settings.whatsapp}
             />
-            {/* PageTransitions handles the AnimatePresence keyed by pathname */}
-            <PageTransitions>
-              <main className="flex-1">{children}</main>
-            </PageTransitions>
+            <main className="flex-1">{children}</main>
             <Footer />
           </div>
+          </MotionProvider>
         </LocaleProvider>
-
-        {/* loading overlay - page loader (hidden by default) */}
-        <div
-          id="page-loader"
-          className="fixed inset-0 z-50 hidden items-center justify-center bg-white/80"
-        >
-          <Image
-            className="w-28 h-28 animate-float"
-            src="/LOGO MYGALE 2.png"
-            alt="MYGALE ART ET SERVICES logo"
-            width={100}
-            height={20}
-            priority
-          />
-        </div>
 
         <Analytics />
       </body>
