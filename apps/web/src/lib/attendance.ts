@@ -5,6 +5,8 @@ import type { AttendanceStatus } from '@prisma/client'
 
 export const DEFAULT_WINDOW_START_MINUTES = 8 * 60 // 08:00
 export const DEFAULT_WINDOW_END_MINUTES = 8 * 60 + 30 // 08:30
+/** Guards against an accidental check-in immediately followed by a check-out. */
+export const MIN_MINUTES_BEFORE_CHECKOUT = 5
 
 /**
  * Arrival at or before the window's end is ON_TIME (arriving early is never
@@ -130,7 +132,7 @@ function isUniqueConstraintError(err: unknown): boolean {
 export type CheckOutResult =
   | { outcome: 'recorded'; departureAt: Date }
   | { outcome: 'already_recorded'; departureAt: Date }
-  | { outcome: 'error'; code: 'inactive_account' | 'not_checked_in' }
+  | { outcome: 'error'; code: 'inactive_account' | 'not_checked_in' | 'too_soon' }
 
 /**
  * Records today's departure for `userId`. Mirrors recordCheckIn: the
@@ -156,6 +158,9 @@ export async function recordCheckOut(userId: string): Promise<CheckOutResult> {
   }
 
   const now = new Date()
+  if (now.getTime() - existing.arrivalAt.getTime() < MIN_MINUTES_BEFORE_CHECKOUT * 60_000) {
+    return { outcome: 'error', code: 'too_soon' }
+  }
   const updated = await prisma.attendance.update({
     where: { id: existing.id },
     data: { departureAt: now },

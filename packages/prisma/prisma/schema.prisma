@@ -619,6 +619,21 @@ model AttendanceWindow {
   updatedBy          User?       @relation(fields: [updatedById], references: [id])
 }
 
+/**
+ * Singleton (id = 'default') holding the attendance QR's lifetime. The QR
+ * token derives from tokenSeed and is valid until rotatedAt + validityHours,
+ * so a printed poster keeps working until that moment (default: 7 days) or
+ * until an admin regenerates it.
+ */
+model AttendanceQrConfig {
+  id            String   @id @default("default")
+  tokenSeed     String
+  validityHours Int      @default(168)
+  rotatedAt     DateTime @default(now())
+  updatedById   String?
+  updatedAt     DateTime @updatedAt
+}
+
 enum AttendanceStatus {
   ON_TIME
   LATE

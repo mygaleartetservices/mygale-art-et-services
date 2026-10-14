@@ -428,11 +428,29 @@ const attendanceConfig = {
 const attendanceQr = {
   fr: {
     title: 'Code QR de présence',
-    body: "Affichez ceci sur un écran à l'entrée — pas sur papier : le code change automatiquement toutes les minutes, donc une copie imprimée cesse rapidement de fonctionner. Chaque employé doit scanner le code à chaque arrivée et à chaque départ ; le fait d'être déjà connecté ne suffit pas. Le code lui-même n'identifie personne, donc le même code fonctionne pour tous les départements et postes.",
+    body: "Imprimez ce code et affichez-le à l'entrée : il reste valable jusqu'à sa date d'expiration (configurable) et ne change pas d'ici là. Chaque employé doit le scanner à chaque arrivée et à chaque départ. Si le code est compromis, régénérez-le : les anciennes copies cesseront immédiatement de fonctionner.",
+    validUntil: "Valable jusqu'au",
+    expiredBanner: 'Ce code a expiré. Régénérez-le et réimprimez-le.',
+    validity: 'Durée de validité',
+    days: 'jours',
+    saveRegenerate: 'Régénérer le code',
+    regenerateHelp: "Génère un nouveau code et redémarre la durée de validité. Les codes déjà imprimés seront invalidés.",
+    print: 'Imprimer',
+    superAdminOnly: 'Seul un Super-Admin peut modifier la durée ou régénérer le code.',
+    invalidValidity: 'Entrez une durée entre 1 et 365 jours.',
   },
   en: {
     title: 'Attendance QR Code',
-    body: "Display this on a screen at the entrance — not on paper: the code rotates automatically every minute, so a printed copy stops working quickly. Every employee must scan it on both arrival and departure; being logged in isn't enough on its own. The code itself doesn't identify anyone, so the same code works for every department and role.",
+    body: "Print this code and post it at the entrance: it stays valid until its expiry date (configurable) and does not change before then. Every employee must scan it on both arrival and departure. If the code is compromised, regenerate it — older copies stop working immediately.",
+    validUntil: 'Valid until',
+    expiredBanner: 'This code has expired. Regenerate it and print it again.',
+    validity: 'Validity period',
+    days: 'days',
+    saveRegenerate: 'Regenerate code',
+    regenerateHelp: 'Creates a new code and restarts the validity period. Already-printed codes will stop working.',
+    print: 'Print',
+    superAdminOnly: 'Only a Super Admin can change the duration or regenerate the code.',
+    invalidValidity: 'Enter a duration between 1 and 365 days.',
   },
 }
 
@@ -1298,6 +1316,18 @@ const myAttendance = {
       "Impossible d'accéder à la caméra. Vérifiez les autorisations de votre navigateur, ou utilisez l'appareil photo de votre téléphone pour scanner le code directement.",
     scannerNotFound:
       "Le code scanné n'est pas un code de présence valide. Réessayez avec le code affiché à l'entrée.",
+    qrExpired:
+      "Ce code QR a expiré. Demandez à un administrateur d'afficher ou d'imprimer le code actuel, puis scannez-le.",
+    qrReplaced:
+      "Ce code QR a été remplacé par un nouveau. Scannez le code actuellement affiché à l'entrée.",
+    scanToLeave: 'Arrivée enregistrée. Scannez à nouveau le code QR à votre départ pour pointer la sortie.',
+    scannerRetry: 'Réessayer',
+    scannerInsecure:
+      "La caméra n'est disponible que sur une connexion sécurisée (HTTPS). Utilisez l'appareil photo de votre téléphone pour scanner le code.",
+    scannerDenied:
+      "L'accès à la caméra est bloqué. Appuyez sur l'icône de cadenas dans la barre d'adresse > Autorisations > Caméra > Autoriser, puis appuyez sur Réessayer. (Les autorisations d'un autre appareil ne s'appliquent pas à ce téléphone.)",
+    scannerNoCamera: "Aucune caméra détectée sur cet appareil.",
+    scannerBusy: 'La caméra est utilisée par une autre application. Fermez-la puis réessayez.',
     recordedNow: 'Présence enregistrée avec succès.',
     recordedAlready: "Votre présence d'aujourd'hui est enregistrée.",
     arrival: 'Arrivée :',
@@ -1330,6 +1360,18 @@ const myAttendance = {
     scannerCameraError:
       "Couldn't access the camera. Check your browser's camera permissions, or use your phone's camera app to scan the code directly.",
     scannerNotFound: "That's not a valid attendance code. Try again with the code at the entrance.",
+    qrExpired:
+      'This QR code has expired. Ask an administrator to display or print the current code, then scan it.',
+    qrReplaced:
+      'This QR code was replaced by a new one. Scan the code currently displayed at the entrance.',
+    scanToLeave: 'Arrival recorded. Scan the QR code again when you leave to check out.',
+    scannerRetry: 'Try again',
+    scannerInsecure:
+      "The camera only works on a secure (HTTPS) connection. Use your phone's camera app to scan the code instead.",
+    scannerDenied:
+      "Camera access is blocked. Tap the lock icon in the address bar > Permissions > Camera > Allow, then tap Try again. (Permissions set on another device, like your laptop, don't apply to this phone.)",
+    scannerNoCamera: 'No camera was found on this device.',
+    scannerBusy: 'The camera is in use by another app. Close it and try again.',
     recordedNow: 'Attendance recorded successfully.',
     recordedAlready: "Today's attendance is recorded.",
     arrival: 'Arrival:',
