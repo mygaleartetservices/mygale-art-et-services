@@ -5,6 +5,7 @@ import prisma from '@/lib/prisma'
 import { requireRole } from '@/lib/auth'
 import { writeAuditLog } from '@/lib/revisions'
 import { parseTimeToMinutes } from '@/lib/timezone'
+import { getQrConfig } from '@/lib/attendanceQr'
 
 type ActionState = { error?: string }
 
@@ -70,6 +71,27 @@ export async function setAttendanceWindow(_prevState: ActionState, formData: For
     actor.id,
   )
 
+  revalidatePath('/admin/attendance/config')
+  return {}
+}
+
+export async function setMinCheckoutMinutes(_prev: ActionState, formData: FormData) {
+  const actor = await requireRole('SUPER_ADMIN')
+  const minutes = Number(asString(formData.get('minCheckoutMinutes')))
+  if (!Number.isInteger(minutes) || minutes < 0 || minutes > 240) {
+    return { error: 'Enter a whole number of minutes between 0 and 240.' }
+  }
+
+  await getQrConfig()
+  await prisma.attendanceQrConfig.update({
+    where: { id: 'default' },
+    data: { minCheckoutMinutes: minutes, updatedById: actor.id },
+  })
+  await writeAuditLog(
+    'attendance.config.min_checkout',
+    { entityType: 'AttendanceQrConfig', entityId: 'default', minCheckoutMinutes: minutes },
+    actor.id,
+  )
   revalidatePath('/admin/attendance/config')
   return {}
 }

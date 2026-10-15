@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { checkInAttendance, checkOutAttendance } from './actions'
 import { formatClockTime } from '@/lib/timezone'
@@ -44,10 +44,12 @@ export default function AttendancePanel({
   initialRecord,
   token,
   tokenValid,
+  tokenProblem,
 }: {
   initialRecord: Recorded | null
   token: string | null
   tokenValid: boolean
+  tokenProblem: 'expired' | 'invalid' | null
 }) {
   const t = useAdminT().myAttendance
   const [record, setRecord] = useState<Recorded | null>(initialRecord)
@@ -57,6 +59,17 @@ export default function AttendancePanel({
     checkOutAttendance,
     checkOutInitialState,
   )
+
+  // Once the check-in lands, drop the token from the URL: signing out must
+  // need a fresh scan, otherwise reopening this page (or tapping through)
+  // would let someone record arrival and departure back to back.
+  const checkedInNow = justRecorded === 'in'
+  useEffect(() => {
+    if (checkedInNow) window.history.replaceState(null, '', window.location.pathname)
+  }, [checkedInNow])
+
+  const scanMessage = (fallback: string) =>
+    tokenProblem === 'expired' ? t.qrExpired : tokenProblem === 'invalid' ? t.qrReplaced : fallback
 
   if (checkInState.result && (!record || checkInState.result.arrivalAt !== record.arrivalAt)) {
     setRecord({
@@ -132,7 +145,7 @@ export default function AttendancePanel({
         ) : (
           <div className="space-y-3">
             <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-              {t.scanRequiredOut}
+              {justRecorded === 'in' ? t.scanToLeave : scanMessage(t.scanRequiredOut)}
             </div>
             <QrScanner />
           </div>
@@ -159,7 +172,7 @@ export default function AttendancePanel({
       ) : (
         <div className="space-y-3">
           <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-            {t.scanRequired}
+            {scanMessage(t.scanRequired)}
           </div>
           <QrScanner />
         </div>

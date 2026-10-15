@@ -21,6 +21,10 @@ const ERROR_MESSAGES = {
     fr: 'Votre compte est inactif. Contactez un administrateur.',
     en: 'Your account is not active. Contact an administrator.',
   },
+  too_soon: {
+    fr: "Vous venez de pointer votre arrivée. Vous pourrez pointer votre départ dans quelques minutes.",
+    en: 'You just checked in. You can check out in a few minutes.',
+  },
   not_checked_in: {
     fr: 'Vous devez pointer votre arrivée avant de pouvoir pointer votre départ.',
     en: 'You must check in before you can check out.',
@@ -28,8 +32,8 @@ const ERROR_MESSAGES = {
 } as const
 
 const SCAN_REQUIRED_MESSAGE = {
-  fr: 'Code QR expiré ou manquant. Scannez à nouveau le code de présence pour continuer.',
-  en: 'QR code missing or expired. Scan the attendance QR code again to continue.',
+  fr: 'Code QR manquant, expiré ou remplacé. Scannez le code de présence actuel pour continuer.',
+  en: 'QR code missing, expired or replaced. Scan the current attendance QR code to continue.',
 } as const
 
 /**
@@ -40,7 +44,7 @@ const SCAN_REQUIRED_MESSAGE = {
  */
 async function requireScan(formData: FormData) {
   const token = formData.get('t')
-  if (typeof token !== 'string' || !verifyAttendanceToken(token)) {
+  if (typeof token !== 'string' || !(await verifyAttendanceToken(token))) {
     const locale = await getLocale()
     return SCAN_REQUIRED_MESSAGE[locale]
   }

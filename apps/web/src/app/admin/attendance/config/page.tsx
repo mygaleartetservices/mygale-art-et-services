@@ -3,16 +3,19 @@ import { requireRole } from '@/lib/auth'
 import { DEFAULT_WINDOW_START_MINUTES, DEFAULT_WINDOW_END_MINUTES } from '@/lib/attendance'
 import { formatMinutesAsTime } from '@/lib/timezone'
 import { getAdminT } from '@/lib/getLocale'
+import { getQrConfig } from '@/lib/attendanceQr'
 import WindowForm from './WindowForm'
+import MinCheckoutForm from './MinCheckoutForm'
 
 export default async function AttendanceConfigPage() {
   // Managing the attendance time window is Super-Admin-only — an Admin can
   // still view/correct attendance, just not change what counts as late.
   await requireRole('SUPER_ADMIN')
-  const [departments, windows, adminT] = await Promise.all([
+  const [departments, windows, adminT, qrConfig] = await Promise.all([
     prisma.department.findMany({ orderBy: { name: 'asc' } }),
     prisma.attendanceWindow.findMany(),
     getAdminT(),
+    getQrConfig(),
   ])
   const t = adminT.attendanceConfig
 
@@ -39,6 +42,11 @@ export default async function AttendanceConfigPage() {
             defaultWindow?.windowEndMinutes ?? DEFAULT_WINDOW_END_MINUTES,
           )}
         />
+      </div>
+
+      <div className="rounded-xl border border-neutral-800 p-4 space-y-2">
+        <div className="text-sm font-semibold">{t.minCheckoutTitle}</div>
+        <MinCheckoutForm minutes={qrConfig.minCheckoutMinutes} />
       </div>
 
       <div className="space-y-4">
