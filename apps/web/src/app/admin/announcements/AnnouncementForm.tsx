@@ -6,6 +6,7 @@ import { useFormStatus } from 'react-dom'
 import { createAnnouncement, updateAnnouncement } from './actions'
 import { uploadMedia } from '@/lib/mediaClient'
 import { useAdminT } from '@/lib/locale'
+import AdminFileInput from '@/components/admin/AdminFileInput'
 
 const initialState = { error: '' as string | undefined }
 
@@ -32,7 +33,7 @@ function SubmitButton({ label, pendingLabel }: { label: string; pendingLabel: st
   return (
     <button
       type="submit"
-      className="rounded-lg bg-[#003366] px-5 py-2 text-white font-semibold disabled:opacity-60"
+      className="rounded-lg bg-[#1f44c9] text-white hover:bg-[#1937a6] px-5 py-2 text-white font-semibold disabled:opacity-60"
       disabled={pending}
     >
       {pending ? pendingLabel : label}
@@ -113,13 +114,7 @@ export default function AnnouncementForm({
       <div>
         <label className="text-sm text-neutral-300">{t.bannerImage}</label>
         <div className="mt-1 flex items-center gap-3">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            disabled={uploading}
-            className="block w-full text-sm text-neutral-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-neutral-800 file:text-neutral-200 hover:file:bg-neutral-700 disabled:opacity-50"
-          />
+          <AdminFileInput accept="image/*" onChange={handleFileChange} disabled={uploading} />
           {uploading && <span className="text-xs text-neutral-400">{common.uploading}</span>}
         </div>
         {imageUrl && (

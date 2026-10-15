@@ -227,3 +227,39 @@ a {
       "e e f f f f";
   }
 }
+
+/* ── Admin theme ────────────────────────────────────────────────────────
+   The dashboard is dark, built from Mygale's ink rather than neutral black:
+   inside .admin-theme the neutral scale every admin screen uses is remapped
+   to ink-tinted values, so all pages pick up the brand without per-page
+   edits. Cobalt stays the one accent (active page, primary actions).
+   Contrast: neutral-400 text on neutral-900 cards is 7.6:1, neutral-500 is
+   4.9:1. */
+.admin-theme {
+  --color-neutral-100: #f1f2f7;
+  --color-neutral-200: #e2e5ef;
+  --color-neutral-300: #c9cee0;
+  --color-neutral-400: #a3abc8;
+  --color-neutral-500: #858fb2;
+  --color-neutral-600: #5a6590;
+  --color-neutral-700: #2f3c62;
+  --color-neutral-800: #1f2b4d;
+  --color-neutral-900: #111c3b;
+  --color-neutral-950: #0a1229;
+  --color-gray-500: #858fb2;
+  /* Cobalt lifted for text and rings on dark surfaces (4.8:1 on cards). */
+  --admin-accent: #7d97ff;
+  color-scheme: dark;
+}
+.admin-theme h1 {
+  font-family: var(--font-unbounded), system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+.admin-theme :focus-visible {
+  outline: 2px solid var(--admin-accent);
+  outline-offset: 2px;
+}
+.admin-theme ::selection {
+  background: rgb(31 68 201 / 0.55);
+  color: #fff;
+}

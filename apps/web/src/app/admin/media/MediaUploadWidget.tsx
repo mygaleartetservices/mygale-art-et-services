@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { uploadMedia } from '@/lib/mediaClient'
 import { useAdminT } from '@/lib/locale'
+import AdminFileInput from '@/components/admin/AdminFileInput'
 
 export default function MediaUploadWidget() {
   const [folder, setFolder] = useState('uploads')
@@ -38,14 +39,7 @@ export default function MediaUploadWidget() {
       </div>
       <div>
         <label className="text-xs text-neutral-400">{t.uploadFilesLabel}</label>
-        <input
-          type="file"
-          accept="image/*,video/mp4,video/webm"
-          multiple
-          onChange={handleUpload}
-          disabled={uploading}
-          className="mt-1 block text-sm text-neutral-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-neutral-800 file:text-neutral-200 hover:file:bg-neutral-700 disabled:opacity-50"
-        />
+        <AdminFileInput accept="image/*,video/mp4,video/webm" multiple onChange={handleUpload} disabled={uploading} />
       </div>
       {uploading && <span className="text-xs text-neutral-400">{t.uploading}</span>}
     </div>

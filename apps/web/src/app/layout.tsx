@@ -5,6 +5,7 @@ import { Instrument_Sans, Unbounded } from 'next/font/google'
 import { LocaleProvider } from '@/lib/locale'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import SiteOnly from '@/components/SiteOnly'
 import MotionProvider from '@/components/motion/MotionProvider'
 import SmoothScroll from '@/components/motion/SmoothScroll'
 import RouteProgress from '@/components/motion/RouteProgress'
@@ -78,18 +79,24 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <LocaleProvider initialLang={locale}>
           <MotionProvider>
           <RouteProgress />
-          <SmoothScroll />
+          <SiteOnly>
+            <SmoothScroll />
+          </SiteOnly>
           <div className="min-h-screen flex flex-col">
-            <Suspense fallback={<div className="min-h-12" aria-hidden />}>
-              <AnnouncementBanner />
-            </Suspense>
-            <Navbar
-              navItems={navItems}
-              services={services.map((s) => ({ slug: s.slug, titleFr: s.titleFr, titleEn: s.titleEn }))}
-              whatsapp={settings.whatsapp}
-            />
+            <SiteOnly>
+              <Suspense fallback={<div className="min-h-12" aria-hidden />}>
+                <AnnouncementBanner />
+              </Suspense>
+              <Navbar
+                navItems={navItems}
+                services={services.map((s) => ({ slug: s.slug, titleFr: s.titleFr, titleEn: s.titleEn }))}
+                whatsapp={settings.whatsapp}
+              />
+            </SiteOnly>
             <main className="flex-1">{children}</main>
-            <Footer />
+            <SiteOnly>
+              <Footer />
+            </SiteOnly>
           </div>
           </MotionProvider>
         </LocaleProvider>

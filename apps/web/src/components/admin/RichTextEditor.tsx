@@ -21,7 +21,7 @@ function ToolbarButton({
       onClick={onClick}
       aria-label={label}
       className={`rounded border px-2 py-1 text-xs ${
-        active ? 'border-[#003366] bg-[#003366] text-white' : 'border-neutral-700 text-neutral-300'
+        active ? 'border-[#003366] bg-[#1f44c9] text-white hover:bg-[#1937a6] text-white' : 'border-neutral-700 text-neutral-300'
       }`}
     >
       {children}

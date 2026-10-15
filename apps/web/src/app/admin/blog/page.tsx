@@ -1,14 +1,16 @@
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
 import { deleteBlogPost, toggleBlogPostPublish } from './actions'
-import { getAdminT } from '@/lib/getLocale'
+import { getAdminT, getLocale } from '@/lib/getLocale'
+import type { Lang } from '@/lib/locale'
 
-function formatDate(value: Date | null) {
+function formatDate(value: Date | null, lang: Lang) {
   if (!value) return '--'
-  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(value)
+  return new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', { dateStyle: 'medium' }).format(value)
 }
 
 export default async function AdminBlogPage() {
+  const lang = await getLocale()
   const [posts, adminT] = await Promise.all([
     prisma.blogPost.findMany({
       orderBy: [{ createdAt: 'desc' }],
@@ -27,14 +29,14 @@ export default async function AdminBlogPage() {
         </div>
         <Link
           href="/admin/blog/new"
-          className="rounded-lg bg-[#003366] px-4 py-2 text-sm font-semibold"
+          className="rounded-lg bg-[#1f44c9] text-white hover:bg-[#1937a6] px-4 py-2 text-sm font-semibold"
         >
           {t.newPost}
         </Link>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-neutral-800">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto rounded-xl border border-neutral-800">
+        <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-neutral-900 text-neutral-300">
             <tr>
               <th className="px-4 py-3">{t.tableTitle}</th>
@@ -63,7 +65,7 @@ export default async function AdminBlogPage() {
                     {post.published ? common.published : common.draft}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-neutral-300">{formatDate(post.publishedAt)}</td>
+                <td className="px-4 py-3 text-neutral-300">{formatDate(post.publishedAt, lang)}</td>
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap items-center gap-2">
                     <Link

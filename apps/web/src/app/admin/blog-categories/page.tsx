@@ -35,13 +35,13 @@ export default async function AdminBlogCategoriesPage() {
           required
           className="rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm"
         />
-        <button type="submit" className="rounded-lg bg-[#003366] px-4 py-2 text-sm font-semibold">
+        <button type="submit" className="rounded-lg bg-[#1f44c9] text-white hover:bg-[#1937a6] px-4 py-2 text-sm font-semibold">
           {t.addCategory}
         </button>
       </form>
 
-      <div className="overflow-hidden rounded-xl border border-neutral-800">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto rounded-xl border border-neutral-800">
+        <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-neutral-900 text-neutral-300">
             <tr>
               <th className="px-4 py-3">{t.tableName}</th>

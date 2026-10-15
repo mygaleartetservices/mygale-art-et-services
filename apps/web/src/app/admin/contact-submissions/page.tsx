@@ -1,14 +1,14 @@
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
-import StatusChip from '@/components/StatusChip'
 import { StatusSelect, AssigneeSelect } from './SubmissionRowControls'
-import { getAdminT } from '@/lib/getLocale'
+import { getAdminT, getLocale } from '@/lib/getLocale'
+import type { Lang } from '@/lib/locale'
 import type { SubmissionStatus } from '@prisma/client'
 
 const STATUS_TAB_IDS = ['all', 'new', 'in_review', 'responded', 'closed'] as const
 
-function formatDate(value: Date) {
-  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(
+function formatDate(value: Date, lang: Lang) {
+  return new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' }).format(
     value,
   )
 }
@@ -26,6 +26,7 @@ export default async function AdminContactSubmissionsPage({
 }: {
   searchParams: Promise<{ status?: string; q?: string }>
 }) {
+  const lang = await getLocale()
   const { status, q } = await searchParams
   const activeStatus = status && status !== 'all' ? status : 'all'
 
@@ -112,8 +113,8 @@ export default async function AdminContactSubmissionsPage({
         </form>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-neutral-800">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto rounded-xl border border-neutral-800">
+        <table className="w-full min-w-[880px] text-left text-sm">
           <thead className="bg-neutral-900 text-neutral-300">
             <tr>
               <th className="px-4 py-3">{t.tableFrom}</th>
@@ -145,10 +146,9 @@ export default async function AdminContactSubmissionsPage({
                   <p className="line-clamp-3 whitespace-pre-wrap">{g.latest.message}</p>
                 </td>
                 <td className="px-4 py-3 text-neutral-400 whitespace-nowrap">
-                  {formatDate(g.latest.createdAt)}
+                  {formatDate(g.latest.createdAt, lang)}
                 </td>
-                <td className="px-4 py-3 space-y-2">
-                  <StatusChip status={g.latest.status} label={t.statusTabs[g.latest.status as keyof typeof t.statusTabs]} />
+                <td className="px-4 py-3">
                   <StatusSelect submissionId={g.latest.id} status={g.latest.status} />
                 </td>
                 <td className="px-4 py-3">
