@@ -409,6 +409,10 @@ const attendanceConfig = {
     windowStart: "Début (à l'heure à partir de)",
     windowEnd: 'En retard après',
     saveWindow: 'Enregistrer la fenêtre',
+    minCheckoutTitle: 'Délai minimum avant le départ',
+    minCheckoutLabel: 'Minutes après l’arrivée',
+    minCheckoutHelp: 'Empêche de pointer le départ juste après l’arrivée (0 = désactivé).',
+    saveMinCheckout: 'Enregistrer',
   },
   en: {
     title: 'Attendance Window',
@@ -422,6 +426,10 @@ const attendanceConfig = {
     windowStart: 'Start (on-time from)',
     windowEnd: 'Late after',
     saveWindow: 'Save Window',
+    minCheckoutTitle: 'Minimum time before check-out',
+    minCheckoutLabel: 'Minutes after arrival',
+    minCheckoutHelp: 'Prevents checking out right after checking in (0 = disabled).',
+    saveMinCheckout: 'Save',
   },
 }
 

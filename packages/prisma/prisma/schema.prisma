@@ -629,6 +629,8 @@ model AttendanceQrConfig {
   id            String   @id @default("default")
   tokenSeed     String
   validityHours Int      @default(168)
+  /** Minimum minutes between check-in and check-out (0 disables the guard). */
+  minCheckoutMinutes Int  @default(5)
   rotatedAt     DateTime @default(now())
   updatedById   String?
   updatedAt     DateTime @updatedAt
