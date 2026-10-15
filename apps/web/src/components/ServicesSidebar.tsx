@@ -19,8 +19,8 @@ export default function ServicesSidebar({ activeSlug, services, locale }: Props)
       : 'Découvrez nos expériences, projets passés et solutions sur-mesure pour chaque service.'
 
   return (
-    <div className="sticky top-24 p-4 border rounded-lg bg-white">
-      <h4 className="text-sm font-semibold text-gray-700 mb-3">{title}</h4>
+    <div className="sticky top-24 p-4 border rounded-lg bg-surface">
+      <h4 className="text-sm font-semibold text-ink-muted mb-3">{title}</h4>
 
       <ul className="space-y-2 text-sm">
         {services.map((s) => {
@@ -30,7 +30,7 @@ export default function ServicesSidebar({ activeSlug, services, locale }: Props)
             <li key={s.slug}>
               <Link
                 href={`/services/${s.slug}`}
-                className={`block px-3 py-2 rounded ${active ? 'bg-[#003366] text-white' : 'text-gray-700 hover:bg-gray-50'}`}
+                className={`block px-3 py-2 rounded ${active ? 'bg-primary text-white' : 'text-ink-muted hover:bg-canvas'}`}
               >
                 {label}
               </Link>
@@ -38,7 +38,7 @@ export default function ServicesSidebar({ activeSlug, services, locale }: Props)
           )
         })}
       </ul>
-      <div className="mt-4 text-xs text-gray-500">{tagline}</div>
+      <div className="mt-4 text-xs text-ink-muted">{tagline}</div>
     </div>
   )
 }

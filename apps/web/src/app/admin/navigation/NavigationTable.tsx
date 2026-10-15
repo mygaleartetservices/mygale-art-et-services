@@ -35,9 +35,9 @@ export default function NavigationTable({ items: initial }: { items: NavRow[] })
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-neutral-800">
+    <div className="overflow-x-auto rounded-xl border border-neutral-800">
       <SortableList id="navigation-table" items={items} onReorder={handleReorder}>
-        <table className="w-full text-left text-sm">
+        <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-neutral-900 text-neutral-300">
             <tr>
               <th className="px-4 py-3 w-10"></th>

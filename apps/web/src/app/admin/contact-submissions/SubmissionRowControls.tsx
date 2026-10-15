@@ -12,15 +12,25 @@ export function StatusSelect({
   submissionId: string
   status: string
 }) {
-  const t = useAdminT().contactSubmissions
+  const adminT = useAdminT()
+  const t = adminT.contactSubmissions
+  // One control that is also the status badge: the table used to show a
+  // coloured chip and, under it, a select repeating the same word.
+  const tone: Record<string, string> = {
+    new: 'border-[#1f44c9]/70 bg-[#1f44c9]/20 text-white',
+    in_review: 'border-amber-500/50 bg-amber-500/10 text-amber-100',
+    responded: 'border-emerald-500/50 bg-emerald-500/10 text-emerald-100',
+    closed: 'border-neutral-700 bg-neutral-900 text-neutral-400',
+  }
   return (
     <form action={updateSubmissionStatus}>
       <input type="hidden" name="id" value={submissionId} />
       <select
         name="status"
+        aria-label={adminT.common.status}
         defaultValue={status}
         onChange={(e) => e.currentTarget.form?.requestSubmit()}
-        className="rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-xs"
+        className={`min-h-9 rounded-full border px-3 py-1 text-xs font-semibold ${tone[status] ?? tone.closed}`}
       >
         {STATUSES.map((s) => (
           <option key={s} value={s}>

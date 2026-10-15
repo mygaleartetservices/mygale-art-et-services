@@ -45,9 +45,9 @@ export default function ServicesTable({ services: initial }: { services: Service
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-neutral-800">
+    <div className="overflow-x-auto rounded-xl border border-neutral-800">
       <SortableList id="services-table" items={services} onReorder={handleReorder}>
-        <table className="w-full text-left text-sm">
+        <table className="w-full min-w-[880px] text-left text-sm">
           <thead className="bg-neutral-900 text-neutral-300">
             <tr>
               <th className="px-4 py-3 w-10"></th>
@@ -67,10 +67,15 @@ export default function ServicesTable({ services: initial }: { services: Service
                       <DragHandle dragHandleProps={dragHandleProps} />
                     </td>
                     <td className="px-4 py-3">
-                      <div className="font-semibold">{service.titleFr}</div>
+                      <Link
+                        href={`/admin/services/${service.id}/edit`}
+                        className="font-semibold text-neutral-100 hover:text-white hover:underline"
+                      >
+                        {service.titleFr}
+                      </Link>
                       <div className="text-xs text-neutral-400">{service.titleEn}</div>
                     </td>
-                    <td className="px-4 py-3 text-neutral-300">{service.slug}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-neutral-400">{service.slug}</td>
                     <td className="px-4 py-3 text-neutral-300">{service.featured ? t.yes : t.no}</td>
                     <td className="px-4 py-3">
                       <span
@@ -84,23 +89,26 @@ export default function ServicesTable({ services: initial }: { services: Service
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex flex-wrap items-center gap-2">
+                      {/* One clear primary, quiet secondary actions, the
+                          destructive one set apart. It used to be five
+                          identical outlined buttons per row. */}
+                      <div className="flex flex-wrap items-center gap-1">
                         <Link
                           href={`/admin/services/${service.id}/edit`}
-                          className="rounded border border-neutral-700 px-3 py-1 text-xs"
+                          className="inline-flex min-h-9 items-center rounded-lg bg-[#1f44c9] px-3 text-xs font-semibold text-white hover:bg-[#1937a6]"
                         >
                           {t.edit}
                         </Link>
                         <Link
                           href={`/services/${service.slug}?preview=1`}
                           target="_blank"
-                          className="rounded border border-neutral-700 px-3 py-1 text-xs"
+                          className="inline-flex min-h-9 items-center rounded-lg px-2.5 text-xs font-medium text-neutral-300 hover:bg-neutral-800 hover:text-white"
                         >
                           {t.preview}
                         </Link>
                         <Link
                           href={`/admin/services/${service.id}/revisions`}
-                          className="rounded border border-neutral-700 px-3 py-1 text-xs"
+                          className="inline-flex min-h-9 items-center rounded-lg px-2.5 text-xs font-medium text-neutral-300 hover:bg-neutral-800 hover:text-white"
                         >
                           {t.history}
                         </Link>
@@ -114,17 +122,17 @@ export default function ServicesTable({ services: initial }: { services: Service
                           />
                           <button
                             type="submit"
-                            className="rounded border border-neutral-700 px-3 py-1 text-xs"
+                            className="inline-flex min-h-9 items-center rounded-lg px-2.5 text-xs font-medium text-neutral-300 hover:bg-neutral-800 hover:text-white"
                           >
                             {service.published ? t.unpublish : t.publish}
                           </button>
                         </form>
 
-                        <form action={softDeleteService}>
+                        <form action={softDeleteService} className="ml-1 border-l border-neutral-800 pl-1">
                           <input type="hidden" name="id" value={service.id} />
                           <button
                             type="submit"
-                            className="rounded border border-red-500/60 px-3 py-1 text-xs text-red-200"
+                            className="inline-flex min-h-9 items-center rounded-lg px-2.5 text-xs font-medium text-red-300 hover:bg-red-500/10"
                           >
                             {t.delete}
                           </button>

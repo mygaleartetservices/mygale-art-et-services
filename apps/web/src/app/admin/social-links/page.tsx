@@ -24,7 +24,7 @@ export default async function AdminSocialLinksPage() {
         </div>
         <Link
           href="/admin/social-links/new"
-          className="rounded-lg bg-[#003366] px-4 py-2 text-sm font-semibold"
+          className="rounded-lg bg-[#1f44c9] text-white hover:bg-[#1937a6] px-4 py-2 text-sm font-semibold"
         >
           {t.newLink}
         </Link>

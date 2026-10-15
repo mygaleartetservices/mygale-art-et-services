@@ -3,11 +3,12 @@ import Link from 'next/link'
 import prisma from '@/lib/prisma'
 import StatusChip from '@/components/StatusChip'
 import { StatusSelect, AssigneeSelect } from '../SubmissionRowControls'
-import { getAdminT } from '@/lib/getLocale'
+import { getAdminT, getLocale } from '@/lib/getLocale'
+import type { Lang } from '@/lib/locale'
 import ReplyForm from './ReplyForm'
 
-function formatDate(value: Date) {
-  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(
+function formatDate(value: Date, lang: Lang) {
+  return new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' }).format(
     value,
   )
 }
@@ -17,6 +18,7 @@ export default async function ContactSubmissionDetailPage({
 }: {
   params: Promise<{ id: string }>
 }) {
+  const lang = await getLocale()
   const { id } = await params
   const [submission, staff, adminT] = await Promise.all([
     prisma.contactSubmission.findUnique({
@@ -58,7 +60,7 @@ export default async function ContactSubmissionDetailPage({
             <h2 className="mb-2 text-sm font-semibold text-neutral-200">{t.messageSectionTitle}</h2>
             <p className="whitespace-pre-wrap text-neutral-300">{submission.message}</p>
             <p className="mt-3 text-xs text-neutral-500">
-              {t.receivedLabel} {formatDate(submission.createdAt)}
+              {t.receivedLabel} {formatDate(submission.createdAt, lang)}
               {submission.source ? ` · ${submission.source}` : ''}
             </p>
           </div>
@@ -75,7 +77,7 @@ export default async function ContactSubmissionDetailPage({
                   <li key={reply.id} className="rounded-lg border border-neutral-800 p-3">
                     <div className="flex items-center justify-between text-xs text-neutral-500">
                       <span>{channelLabel[reply.channel] || reply.channel}</span>
-                      <span>{formatDate(reply.sentAt)}</span>
+                      <span>{formatDate(reply.sentAt, lang)}</span>
                     </div>
                     <p className="mt-2 whitespace-pre-wrap text-sm text-neutral-300">{reply.body}</p>
                   </li>

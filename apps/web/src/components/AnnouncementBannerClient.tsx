@@ -15,7 +15,7 @@ type AnnouncementData = {
 }
 
 const typeStyles: Record<AnnouncementData['type'], string> = {
-  info: 'bg-[#E6F1FF] text-[#003366] border-[#3399FF]/40',
+  info: 'bg-[#E6F1FF] text-ink border-[#3399FF]/40',
   warning: 'bg-[#FFF7E6] text-[#7A4B00] border-[#F59E0B]/40',
   promo: 'bg-[#ECFDF3] text-[#0F5132] border-[#22C55E]/40',
   success: 'bg-[#ECFDF3] text-[#0F5132] border-[#22C55E]/40',

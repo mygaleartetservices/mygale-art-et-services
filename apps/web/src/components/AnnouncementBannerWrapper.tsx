@@ -16,36 +16,35 @@ export default function AnnouncementBannerWrapper() {
   const [announcement, setAnnouncement] = useState<AnnouncementData | null>(null)
   const [loaded, setLoaded] = useState(false)
 
-  const fetchAnnouncement = async () => {
-    try {
-      const response = await fetch('/api/announcements/current', {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-        },
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setAnnouncement(data)
-      } else {
-        setAnnouncement(null)
-      }
-    } catch (error) {
-      console.error('Failed to fetch announcement:', error)
-      setAnnouncement(null)
-    } finally {
-      setLoaded(true)
-    }
-  }
-
   useEffect(() => {
-    // Fetch initial announcement immediately
-    fetchAnnouncement()
+    let cancelled = false
 
-    // Poll for updates every 30 seconds to catch schedule changes
-    const interval = setInterval(fetchAnnouncement, 30000)
+    // State is only set from the promise callbacks (never synchronously in
+    // the effect), and never after unmount.
+    const load = () =>
+      fetch('/api/announcements/current', {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+      })
+        .then((response) => (response.ok ? (response.json() as Promise<AnnouncementData | null>) : null))
+        .catch((error) => {
+          console.error('Failed to fetch announcement:', error)
+          return null
+        })
+        .then((data) => {
+          if (cancelled) return
+          setAnnouncement(data)
+          setLoaded(true)
+        })
 
-    return () => clearInterval(interval)
+    load()
+    // Poll every 30 seconds to catch schedule changes.
+    const interval = setInterval(load, 30000)
+
+    return () => {
+      cancelled = true
+      clearInterval(interval)
+    }
   }, [])
 
   if (!loaded) {

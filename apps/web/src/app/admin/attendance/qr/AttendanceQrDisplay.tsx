@@ -3,7 +3,8 @@
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { regenerateQr } from './actions'
-import { useAdminT } from '@/lib/locale'
+import { useAdminT, useLocale } from '@/lib/locale'
+import { formatAdminDate } from '@/lib/adminFormat'
 
 type Props = {
   qrDataUrl: string
@@ -20,7 +21,7 @@ function SubmitButton({ label }: { label: string }) {
     <button
       type="submit"
       disabled={pending}
-      className="rounded-lg bg-[#003366] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+      className="rounded-lg bg-[#1f44c9] text-white hover:bg-[#1937a6] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
     >
       {label}
     </button>
@@ -40,6 +41,7 @@ export default function AttendanceQrDisplay({
   canEdit,
 }: Props) {
   const t = useAdminT().attendanceQr
+  const { lang } = useLocale()
   const [state, formAction] = useActionState(regenerateQr, {} as { error?: string })
 
   return (
@@ -57,7 +59,7 @@ export default function AttendanceQrDisplay({
           </div>
         ) : (
           <p className="text-center text-sm text-neutral-400">
-            {t.validUntil} {new Date(expiresAtIso).toLocaleString()}
+            {t.validUntil} {formatAdminDate(expiresAtIso, lang)}
           </p>
         )}
 

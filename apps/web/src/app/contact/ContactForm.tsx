@@ -81,7 +81,7 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="relative rounded-xl border bg-white p-6 shadow-sm md:p-8">
+    <div className="relative rounded-xl border bg-surface p-6 shadow-sm md:p-8">
       {status === 'sent' && <SuccessAnim />}
 
       <form onSubmit={handleSubmit} className="space-y-4">
