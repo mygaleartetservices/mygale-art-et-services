@@ -87,6 +87,15 @@ export default function AdminSidebar({
     setOpen(false)
   }
 
+  // Long link lists scroll inside the sidebar: bring the current page's link
+  // into view so sections near the bottom (Team, System) still show where
+  // you are.
+  useEffect(() => {
+    document
+      .querySelectorAll<HTMLElement>('aside nav [aria-current="page"]')
+      .forEach((link) => link.scrollIntoView({ block: 'nearest' }))
+  }, [pathname])
+
   useEffect(() => {
     if (!open) return
     const previousOverflow = document.body.style.overflow

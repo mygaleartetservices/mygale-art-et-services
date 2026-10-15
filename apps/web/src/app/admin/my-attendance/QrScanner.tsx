@@ -20,6 +20,7 @@ export default function QrScanner() {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [attempt, setAttempt] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
@@ -40,6 +41,12 @@ export default function QrScanner() {
     setError(null)
   }, [stopCamera])
 
+  const retry = useCallback(() => {
+    stopCamera()
+    setError(null)
+    setAttempt((n) => n + 1)
+  }, [stopCamera])
+
   useEffect(() => {
     if (!open) return
 
@@ -47,10 +54,23 @@ export default function QrScanner() {
 
     async function start() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' },
-          audio: false,
-        })
+        if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
+          setError(t.scannerInsecure)
+          return
+        }
+        let stream: MediaStream
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: 'environment' } },
+            audio: false,
+          })
+        } catch (err) {
+          // Only retry with relaxed constraints when the failure is about the
+          // requested camera, never when the user/site denied permission.
+          const name = (err as DOMException)?.name
+          if (name !== 'OverconstrainedError' && name !== 'NotFoundError') throw err
+          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+        }
         if (cancelled) {
           stream.getTracks().forEach((track) => track.stop())
           return
@@ -89,8 +109,13 @@ export default function QrScanner() {
           rafRef.current = requestAnimationFrame(tick)
         }
         rafRef.current = requestAnimationFrame(tick)
-      } catch {
-        if (!cancelled) setError(t.scannerCameraError)
+      } catch (err) {
+        if (cancelled) return
+        const name = (err as DOMException)?.name
+        if (name === 'NotAllowedError' || name === 'SecurityError') setError(t.scannerDenied)
+        else if (name === 'NotFoundError') setError(t.scannerNoCamera)
+        else if (name === 'NotReadableError') setError(t.scannerBusy)
+        else setError(t.scannerCameraError)
       }
     }
 
@@ -101,7 +126,7 @@ export default function QrScanner() {
       stopCamera()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open])
+  }, [open, attempt])
 
   useEffect(() => stopCamera, [stopCamera])
 
@@ -126,8 +151,17 @@ export default function QrScanner() {
         </div>
 
         {error ? (
-          <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-            {error}
+          <div className="space-y-3">
+            <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+              {error}
+            </div>
+            <button
+              type="button"
+              onClick={retry}
+              className="w-full rounded-lg bg-[#1f44c9] text-white hover:bg-[#1937a6] px-5 py-3 text-sm font-semibold text-white"
+            >
+              {t.scannerRetry}
+            </button>
           </div>
         ) : (
           <p className="text-center text-sm text-neutral-400">{t.scannerHint}</p>
