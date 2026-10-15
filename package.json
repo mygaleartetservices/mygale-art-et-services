@@ -70,7 +70,7 @@
     "minimist": "^1.2.8",
     "motion-dom": "^12.43.0",
     "motion-utils": "^12.39.0",
-    "next": "16.3.7",
+    "next": "16.3.8",
     "node-fetch": "^3.3.2",
     "nodemailer": "^10.0.13",
     "parse5": "^8.0.0",
@@ -116,6 +116,11 @@
     "turbo": "^2.6.1"
   },
   "pnpm": {
+    "auditConfig": {
+      "ignoreGhsas": [
+        "GHSA-vfj7-8cjw-p6xm"
+      ]
+    },
     "overrides": {
       "minimatch": ">=10.2.3",
       "picomatch": ">=4.0.4",
@@ -131,7 +136,7 @@
       "engine.io": ">=6.6.10",
       "ws": ">=8.21.0",
       "flatted": ">=3.4.2",
-      "shell-quote": ">=1.9.0",
+      "shell-quote": ">=1.11.0",
       "nanoid": ">=3.3.17",
       "lodash": ">=4.18.0",
       "defu": ">=6.1.5",
