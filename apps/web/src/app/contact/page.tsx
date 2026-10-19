@@ -46,28 +46,28 @@ export default async function ContactPage() {
   }
 
   return (
-    <div className="bg-white text-black">
+    <div className="bg-surface text-black">
       <div className="max-w-6xl mx-auto px-4 py-16">
         <h1 className="text-3xl font-semibold mb-10">{t.heading}</h1>
 
         <div className="grid gap-10 md:grid-cols-2">
           {/* LEFT: company contact information, configured by the admin */}
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-[#003366]">{t.contactInfo}</h2>
+            <h2 className="text-xl font-semibold text-ink">{t.contactInfo}</h2>
 
             {address ? (
               <div>
-                <div className="text-sm font-semibold text-gray-500">{t.address}</div>
-                <div className="text-gray-800">{address}</div>
+                <div className="text-sm font-semibold text-ink-muted">{t.address}</div>
+                <div className="text-ink">{address}</div>
               </div>
             ) : null}
 
             {phones.length > 0 ? (
               <div>
-                <div className="text-sm font-semibold text-gray-500">{t.phone}</div>
+                <div className="text-sm font-semibold text-ink-muted">{t.phone}</div>
                 {phones.map((phone) => (
                   <div key={phone}>
-                    <a className="text-gray-800 hover:underline" href={`tel:${phone.replace(/[^\d+]/g, '')}`}>
+                    <a className="text-ink hover:underline" href={`tel:${phone.replace(/[^\d+]/g, '')}`}>
                       {phone}
                     </a>
                   </div>
@@ -77,10 +77,10 @@ export default async function ContactPage() {
 
             {emails.length > 0 ? (
               <div>
-                <div className="text-sm font-semibold text-gray-500">{t.email}</div>
+                <div className="text-sm font-semibold text-ink-muted">{t.email}</div>
                 {emails.map((email) => (
                   <div key={email}>
-                    <a className="text-gray-800 hover:underline" href={`mailto:${email}`}>
+                    <a className="text-ink hover:underline" href={`mailto:${email}`}>
                       {email}
                     </a>
                   </div>
@@ -90,14 +90,14 @@ export default async function ContactPage() {
 
             {hours ? (
               <div>
-                <div className="text-sm font-semibold text-gray-500">{t.openingHours}</div>
-                <div className="text-gray-800 whitespace-pre-line">{hours}</div>
+                <div className="text-sm font-semibold text-ink-muted">{t.openingHours}</div>
+                <div className="text-ink whitespace-pre-line">{hours}</div>
               </div>
             ) : null}
 
             {socialLinks.length > 0 ? (
               <div>
-                <div className="text-sm font-semibold text-gray-500">{t.followUs}</div>
+                <div className="text-sm font-semibold text-ink-muted">{t.followUs}</div>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {socialLinks.map((link) => (
                     <a
@@ -107,7 +107,7 @@ export default async function ContactPage() {
                       rel="noreferrer"
                       aria-label={link.label || PLATFORM_LABEL[link.platform] || link.platform}
                       title={link.label || PLATFORM_LABEL[link.platform] || link.platform}
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F4F6F8] text-[#003366] shadow-sm transition hover:scale-110 hover:bg-[#003366] hover:text-white"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F4F6F8] text-ink shadow-sm transition hover:scale-110 hover:bg-primary hover:text-white"
                     >
                       <SocialIcon platform={link.platform} className="h-4 w-4" />
                     </a>
@@ -144,7 +144,7 @@ export default async function ContactPage() {
                   href={settings.mapPlaceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-6 inline-block px-6 py-3 rounded-lg bg-[#003366] text-white font-medium shadow hover:scale-105 transition"
+                  className="mt-6 inline-block px-6 py-3 rounded-lg bg-primary text-white font-medium shadow hover:scale-105 transition"
                 >
                   {t.openInMaps}
                 </a>

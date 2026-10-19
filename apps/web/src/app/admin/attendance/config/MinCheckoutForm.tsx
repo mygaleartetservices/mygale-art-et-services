@@ -29,7 +29,7 @@ export default function MinCheckoutForm({ minutes }: { minutes: number }) {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-[#003366] px-4 py-2 text-sm font-semibold disabled:opacity-60"
+        className="rounded-lg bg-[#1f44c9] text-white hover:bg-[#1937a6] px-4 py-2 text-sm font-semibold disabled:opacity-60"
       >
         {pending ? adminT.common.saving : t.saveMinCheckout}
       </button>

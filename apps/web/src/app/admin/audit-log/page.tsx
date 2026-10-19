@@ -1,9 +1,10 @@
 import prisma from '@/lib/prisma'
 import { requireRole } from '@/lib/auth'
-import { getAdminT } from '@/lib/getLocale'
+import { getAdminT, getLocale } from '@/lib/getLocale'
+import type { Lang } from '@/lib/locale'
 
-function formatDate(value: Date) {
-  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(
+function formatDate(value: Date, lang: Lang) {
+  return new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' }).format(
     value,
   )
 }
@@ -18,6 +19,7 @@ function describeMeta(meta: any) {
 }
 
 export default async function AdminAuditLogPage() {
+  const lang = await getLocale()
   await requireRole('SUPER_ADMIN')
   const [entries, adminT] = await Promise.all([
     prisma.auditLog.findMany({
@@ -39,8 +41,8 @@ export default async function AdminAuditLogPage() {
         <p className="text-sm text-neutral-400">{t.subtitle}</p>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-neutral-800">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto rounded-xl border border-neutral-800">
+        <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-neutral-900 text-neutral-300">
             <tr>
               <th className="px-4 py-3">{t.tableWhen}</th>
@@ -53,7 +55,7 @@ export default async function AdminAuditLogPage() {
             {entries.map((entry) => (
               <tr key={entry.id} className="bg-neutral-950">
                 <td className="px-4 py-3 text-neutral-400 whitespace-nowrap">
-                  {formatDate(entry.createdAt)}
+                  {formatDate(entry.createdAt, lang)}
                 </td>
                 <td className="px-4 py-3 font-mono text-xs text-neutral-200">{entry.action}</td>
                 <td className="px-4 py-3 text-neutral-400">

@@ -1,14 +1,16 @@
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
 import { deleteAnnouncement, toggleAnnouncementActive } from './actions'
-import { getAdminT } from '@/lib/getLocale'
+import { getAdminT, getLocale } from '@/lib/getLocale'
+import type { Lang } from '@/lib/locale'
 
-function formatDate(value: Date | null) {
+function formatDate(value: Date | null, lang: Lang) {
   if (!value) return '--'
-  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(value)
+  return new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' }).format(value)
 }
 
 export default async function AdminAnnouncementsPage() {
+  const lang = await getLocale()
   const [announcements, adminT] = await Promise.all([
     prisma.announcement.findMany({
       orderBy: [{ createdAt: 'desc' }],
@@ -27,7 +29,7 @@ export default async function AdminAnnouncementsPage() {
         </div>
         <Link
           href="/admin/announcements/new"
-          className="rounded-lg bg-[#003366] px-4 py-2 text-sm font-semibold"
+          className="rounded-lg bg-[#1f44c9] text-white hover:bg-[#1937a6] px-4 py-2 text-sm font-semibold"
         >
           {t.newAnnouncement}
         </Link>
@@ -68,8 +70,8 @@ export default async function AdminAnnouncementsPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-neutral-300 whitespace-nowrap">
-                  <div className="text-xs">{t.startLabel}: {formatDate(announcement.startsAt)}</div>
-                  <div className="text-xs">{t.endLabel}: {formatDate(announcement.endsAt)}</div>
+                  <div className="text-xs">{t.startLabel}: {formatDate(announcement.startsAt, lang)}</div>
+                  <div className="text-xs">{t.endLabel}: {formatDate(announcement.endsAt, lang)}</div>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <div className="flex items-center gap-1">

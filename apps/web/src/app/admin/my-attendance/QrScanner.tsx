@@ -158,7 +158,7 @@ export default function QrScanner() {
             <button
               type="button"
               onClick={retry}
-              className="w-full rounded-lg bg-[#003366] px-5 py-3 text-sm font-semibold text-white"
+              className="w-full rounded-lg bg-[#1f44c9] text-white hover:bg-[#1937a6] px-5 py-3 text-sm font-semibold text-white"
             >
               {t.scannerRetry}
             </button>

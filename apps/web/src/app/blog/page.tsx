@@ -55,13 +55,13 @@ export default async function BlogPage({
   })
 
   return (
-    <div className="bg-white text-black">
+    <div className="bg-surface text-black">
       <section className="border-b bg-[#F4F6F8]">
         <div className="max-w-6xl mx-auto px-4 py-12">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-semibold text-[#003366]">Blog</h1>
-              <p className="mt-2 text-gray-600">
+              <h1 className="text-3xl md:text-4xl font-semibold text-ink">Blog</h1>
+              <p className="mt-2 text-ink-muted">
                 {locale === 'fr'
                   ? 'Nouvelles, projets et conseils de notre studio.'
                   : 'News, projects, and insights from our studio.'}
@@ -72,8 +72,8 @@ export default async function BlogPage({
                 href={`/blog?lang=fr&page=1`}
                 className={`px-3 py-1 rounded border transition-colors ${
                   locale === 'fr'
-                    ? 'bg-[#003366] text-white border-[#003366]'
-                    : 'hover:border-[#003366]'
+                    ? 'bg-primary text-white border-primary'
+                    : 'hover:border-primary'
                 }`}
               >
                 FR
@@ -82,8 +82,8 @@ export default async function BlogPage({
                 href={`/blog?lang=en&page=1`}
                 className={`px-3 py-1 rounded border transition-colors ${
                   locale === 'en'
-                    ? 'bg-[#003366] text-white border-[#003366]'
-                    : 'hover:border-[#003366]'
+                    ? 'bg-primary text-white border-primary'
+                    : 'hover:border-primary'
                 }`}
               >
                 EN
@@ -95,7 +95,7 @@ export default async function BlogPage({
 
       <section className="max-w-6xl mx-auto px-4 py-12">
         {posts.length === 0 ? (
-          <div className="rounded-xl border border-dashed p-12 text-center text-gray-500">
+          <div className="rounded-xl border border-dashed p-12 text-center text-ink-muted">
             {locale === 'fr' ? 'Aucun article publié pour le moment.' : 'No published posts yet.'}
           </div>
         ) : (
@@ -103,7 +103,7 @@ export default async function BlogPage({
             {posts.map((post) => (
               <article
                 key={post.id}
-                className="group rounded-2xl border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                className="group rounded-2xl border bg-surface shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
               >
                 <Link href={`/blog/${post.slug}`} className="block">
                   {post.coverImage && (
@@ -127,14 +127,14 @@ export default async function BlogPage({
                           : ''}
                       </span>
                       {post.category ? (
-                        <span className="rounded-full bg-[#003366]/10 px-2 py-0.5 text-[#003366] normal-case tracking-normal">
+                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-ink normal-case tracking-normal">
                           {locale === 'en' ? post.category.nameEn : post.category.nameFr}
                         </span>
                       ) : null}
                     </div>
-                    <h2 className="mt-2 text-xl font-semibold text-[#003366]">{post.title}</h2>
-                    <p className="mt-3 text-sm text-gray-600">{post.excerpt}</p>
-                    <span className="mt-4 inline-flex items-center text-sm font-semibold text-[#003366]">
+                    <h2 className="mt-2 text-xl font-semibold text-ink">{post.title}</h2>
+                    <p className="mt-3 text-sm text-ink-muted">{post.excerpt}</p>
+                    <span className="mt-4 inline-flex items-center text-sm font-semibold text-ink">
                       {locale === 'fr' ? 'Lire la suite' : 'Read more'}
                       <span className="ml-2">{'->'}</span>
                     </span>
@@ -155,7 +155,7 @@ export default async function BlogPage({
             >
               {locale === 'fr' ? 'Précédent' : 'Previous'}
             </Link>
-            <div className="text-gray-500">
+            <div className="text-ink-muted">
               {locale === 'fr' ? 'Page' : 'Page'} {currentPage} / {totalPages}
             </div>
             <Link

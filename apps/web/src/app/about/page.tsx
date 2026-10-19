@@ -25,8 +25,8 @@ export default async function AboutPage() {
 
   if (!about) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16">
-        <p className="text-gray-600">Content coming soon.</p>
+      <div className="mx-auto max-w-4xl px-4 py-16">
+        <p className="text-ink-muted">{locale === 'en' ? 'This page is being written.' : 'Cette page est en cours de rédaction.'}</p>
       </div>
     )
   }
@@ -36,25 +36,23 @@ export default async function AboutPage() {
   const body = locale === 'en' ? about.bodyEn : about.bodyFr
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-16">
-      {about.heroImage?.url ? (
-        <div className="mb-8 h-56 w-full overflow-hidden rounded-xl md:h-72">
-          <Image
-            src={about.heroImage.url}
-            alt={title}
-            width={1200}
-            height={500}
-            className="h-full w-full object-cover"
-            priority
-          />
+    <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+      <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
+        <div className="lg:col-span-7">
+          <h1 className="font-display text-4xl font-bold leading-[1.05] sm:text-5xl">{title}</h1>
+          <p className="mt-6 text-xl leading-relaxed text-ink">{intro}</p>
         </div>
-      ) : null}
+        {about.heroImage?.url ? (
+          <div className="relative aspect-4/5 overflow-hidden rounded-t-full border-[10px] border-ink lg:col-span-4 lg:col-start-9">
+            {/* An arched frame, echoing the stained-glass window on the home page. */}
+            <Image src={about.heroImage.url} alt={title} fill sizes="(min-width: 1024px) 360px, 90vw" className="object-cover" priority />
+          </div>
+        ) : null}
+      </div>
 
-      <h1 className="text-4xl font-bold text-[#003366] mb-4">{title}</h1>
-      <p className="text-lg text-gray-700 leading-relaxed mb-8">{intro}</p>
-
+      {/* Body HTML is sanitised on save (admin/about/actions.ts). */}
       <div
-        className="prose max-w-none text-gray-700 leading-relaxed"
+        className="prose prose-lg mt-14 max-w-3xl text-ink prose-headings:font-display prose-headings:text-ink prose-a:text-primary"
         dangerouslySetInnerHTML={{ __html: body }}
       />
     </div>

@@ -51,7 +51,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
       ) : null}
 
       <div>
-        <label htmlFor="reset-password" className="text-sm text-gray-600">
+        <label htmlFor="reset-password" className="text-sm text-ink-muted">
           New password
         </label>
         <input
@@ -66,7 +66,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
       </div>
 
       <div>
-        <label htmlFor="reset-confirm-password" className="text-sm text-gray-600">
+        <label htmlFor="reset-confirm-password" className="text-sm text-ink-muted">
           Confirm new password
         </label>
         <input

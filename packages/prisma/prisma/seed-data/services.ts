@@ -195,8 +195,8 @@ export const SEED_SERVICES: SeedService[] = [
     titleFr: 'Imprimerie Textile',
     titleEn: 'Textile Printing',
     summaryFr:
-      'Solutions d’impression sur tissu — sérigraphie et impression numérique professionnelle.',
-    summaryEn: 'Textile printing solutions — screen printing and professional digital printing.',
+      'Solutions d’impression sur tissu : sérigraphie et impression numérique professionnelle.',
+    summaryEn: 'Textile printing solutions: screen printing and professional digital printing.',
     heroImagePath: '/print.jpg',
     order: 2,
     featured: true,

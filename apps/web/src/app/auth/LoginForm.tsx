@@ -31,7 +31,7 @@ export default function LoginForm({ next }: { next?: string | null }) {
       ) : null}
 
       <div>
-        <label htmlFor="login-email" className="text-sm text-gray-600">
+        <label htmlFor="login-email" className="text-sm text-ink-muted">
           Email
         </label>
         <input
@@ -45,7 +45,7 @@ export default function LoginForm({ next }: { next?: string | null }) {
       </div>
 
       <div>
-        <label htmlFor="login-password" className="text-sm text-gray-600">
+        <label htmlFor="login-password" className="text-sm text-ink-muted">
           Password
         </label>
         <div className="relative">
@@ -60,7 +60,7 @@ export default function LoginForm({ next }: { next?: string | null }) {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-ink-muted transition-colors"
             aria-label={showPassword ? 'Hide password' : 'Show password'}
           >
             {showPassword ? (
@@ -91,7 +91,7 @@ export default function LoginForm({ next }: { next?: string | null }) {
           </button>
         </div>
         <div className="mt-2 text-right">
-          <Link href="/forgot-password" className="text-sm text-[#003366] underline">
+          <Link href="/forgot-password" className="text-sm text-ink underline">
             Forgot password?
           </Link>
         </div>

@@ -22,7 +22,7 @@ export default function StatusFilter({
         <button
           key={s.id}
           className={`px-3 py-1 rounded border text-sm ${
-            active === s.id ? 'bg-black text-white' : 'bg-white'
+            active === s.id ? 'bg-black text-white' : 'bg-surface'
           }`}
           onClick={() => onChange(s.id)}
         >

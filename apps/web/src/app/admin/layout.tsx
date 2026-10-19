@@ -26,14 +26,25 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   const t = await getAdminT()
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white flex">
+    <div className="admin-theme min-h-dvh bg-neutral-950 text-white md:flex">
+      <a
+        href="#admin-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-neutral-950"
+      >
+        {t.nav.skipToContent}
+      </a>
       <Toaster position="bottom-right" toastOptions={{ duration: 5000 }} />
       <AdminSidebar
-        user={{ role: user.role, pagesRestricted: user.pagesRestricted, allowedPages: user.allowedPages }}
+        user={{
+          name: user.name,
+          role: user.role,
+          pagesRestricted: user.pagesRestricted,
+          allowedPages: user.allowedPages,
+        }}
         unreadContactCount={unreadContactCount}
       />
-      <main className="flex-1 p-6 md:p-8">
-        <div className="max-w-5xl mx-auto">
+      <div id="admin-content" tabIndex={-1} className="min-w-0 flex-1 px-4 py-6 outline-none sm:px-6 md:px-10 md:py-10">
+        <div className="mx-auto max-w-6xl">
           {allowed ? (
             children
           ) : (
@@ -43,7 +54,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             </div>
           )}
         </div>
-      </main>
+      </div>
     </div>
   )
 }

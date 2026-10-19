@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { uploadMedia } from '@/lib/mediaClient'
+import { useAdminT } from '@/lib/locale'
+import AdminFileInput from '@/components/admin/AdminFileInput'
 
 type MediaItem = {
   id: string
@@ -26,6 +28,7 @@ export default function MediaPicker({
   onChange: (url: string, key: string) => void
   compact?: boolean
 }) {
+  const t = useAdminT()
   const [uploading, setUploading] = useState(false)
   const [browsing, setBrowsing] = useState(false)
   const [items, setItems] = useState<MediaItem[]>([])
@@ -41,7 +44,7 @@ export default function MediaPicker({
     if (result.ok && result.url && result.key) {
       onChange(result.url, result.key)
     } else {
-      alert(result.error || 'Upload failed')
+      alert(result.error || t.common.uploadFailed)
     }
   }
 
@@ -74,20 +77,14 @@ export default function MediaPicker({
     <div>
       <label className="text-sm text-neutral-300">{label}</label>
       <div className="mt-1 flex flex-wrap items-center gap-3">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleUpload}
-          disabled={uploading}
-          className="block text-sm text-neutral-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-neutral-800 file:text-neutral-200 hover:file:bg-neutral-700 disabled:opacity-50"
-        />
-        {uploading && <span className="text-xs text-neutral-400">Uploading...</span>}
+        <AdminFileInput accept="image/*" onChange={handleUpload} disabled={uploading} />
+        {uploading && <span className="text-xs text-neutral-400">{t.common.uploading}</span>}
         <button
           type="button"
           onClick={openLibrary}
-          className="rounded border border-neutral-700 px-3 py-1.5 text-xs"
+          className="inline-flex min-h-10 items-center rounded-lg border border-neutral-700 px-3 text-sm text-neutral-200 hover:bg-neutral-800"
         >
-          Browse library
+          {t.common.browseLibrary}
         </button>
       </div>
 
@@ -118,7 +115,7 @@ export default function MediaPicker({
             <div className="mb-3 flex items-center justify-between gap-2">
               <input
                 type="text"
-                placeholder="Search media..."
+                placeholder={t.common.searchMedia}
                 value={query}
                 onChange={(e) => search(e.target.value)}
                 className="w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm"
@@ -133,7 +130,7 @@ export default function MediaPicker({
             </div>
 
             {loadingLibrary ? (
-              <p className="text-sm text-neutral-400">Loading...</p>
+              <p className="text-sm text-neutral-400">{t.common.loading}</p>
             ) : (
               <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
                 {items.map((item) => (
@@ -153,7 +150,7 @@ export default function MediaPicker({
                   </button>
                 ))}
                 {items.length === 0 ? (
-                  <p className="col-span-full text-sm text-neutral-400">No media found.</p>
+                  <p className="col-span-full text-sm text-neutral-400">{t.common.noMediaFound}</p>
                 ) : null}
               </div>
             )}

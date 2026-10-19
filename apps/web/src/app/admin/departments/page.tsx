@@ -32,7 +32,7 @@ export default async function AdminDepartmentsPage() {
           required
           className="flex-1 min-w-[200px] rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm"
         />
-        <button type="submit" className="rounded-lg bg-[#003366] px-4 py-2 text-sm font-semibold">
+        <button type="submit" className="rounded-lg bg-[#1f44c9] text-white hover:bg-[#1937a6] px-4 py-2 text-sm font-semibold">
           {t.addDepartment}
         </button>
       </form>

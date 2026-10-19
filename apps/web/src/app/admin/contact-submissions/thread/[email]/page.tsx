@@ -3,11 +3,12 @@ import Link from 'next/link'
 import prisma from '@/lib/prisma'
 import StatusChip from '@/components/StatusChip'
 import { StatusSelect, AssigneeSelect } from '../../SubmissionRowControls'
-import { getAdminT } from '@/lib/getLocale'
+import { getAdminT, getLocale } from '@/lib/getLocale'
+import type { Lang } from '@/lib/locale'
 import ReplyForm from '../../[id]/ReplyForm'
 
-function formatDate(value: Date) {
-  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(
+function formatDate(value: Date, lang: Lang) {
+  return new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' }).format(
     value,
   )
 }
@@ -21,6 +22,7 @@ export default async function ContactThreadPage({
 }: {
   params: Promise<{ email: string }>
 }) {
+  const lang = await getLocale()
   const { email: rawEmail } = await params
   // Route params come through percent-encoded here (confirmed empirically —
   // Next 16 does not auto-decode this segment), so decode explicitly.
@@ -82,18 +84,18 @@ export default async function ContactThreadPage({
                 <div key={`s-${item.id}`} className="rounded-xl border border-neutral-800 p-4">
                   <div className="flex items-center justify-between text-xs text-neutral-500">
                     <span>{t.messageFrom(latest.name)}</span>
-                    <span>{formatDate(item.at)}</span>
+                    <span>{formatDate(item.at, lang)}</span>
                   </div>
                   <p className="mt-2 whitespace-pre-wrap text-sm text-neutral-300">{item.message}</p>
                 </div>
               ) : (
                 <div
                   key={`r-${item.id}`}
-                  className="ml-6 rounded-xl border border-[#003366]/40 bg-[#003366]/10 p-4"
+                  className="ml-6 rounded-xl border border-[#003366]/40 bg-[#1f44c9] text-white hover:bg-[#1937a6]/10 p-4"
                 >
                   <div className="flex items-center justify-between text-xs text-neutral-400">
                     <span>{t.replyPrefix} · {channelLabel[item.channel] || item.channel}</span>
-                    <span>{formatDate(item.at)}</span>
+                    <span>{formatDate(item.at, lang)}</span>
                   </div>
                   <p className="mt-2 whitespace-pre-wrap text-sm text-neutral-200">{item.body}</p>
                 </div>

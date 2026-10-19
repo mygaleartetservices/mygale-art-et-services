@@ -35,7 +35,7 @@ export default function ForgotPasswordForm() {
       ) : null}
 
       <div>
-        <label htmlFor="forgot-email" className="text-sm text-gray-600">
+        <label htmlFor="forgot-email" className="text-sm text-ink-muted">
           Email
         </label>
         <input
