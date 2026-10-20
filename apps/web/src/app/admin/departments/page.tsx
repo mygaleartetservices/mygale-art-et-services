@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import prisma from '@/lib/prisma'
 import { createDepartment, deleteDepartment, createJobRole, deleteJobRole } from './actions'
 import { getAdminT } from '@/lib/getLocale'
@@ -45,6 +46,12 @@ export default async function AdminDepartmentsPage() {
                 <div className="font-semibold">{dept.name}</div>
                 <div className="text-xs text-neutral-400">{t.employeesCount(dept._count.employees)}</div>
               </div>
+              <Link
+                href={`/admin/departments/${dept.id}`}
+                className="rounded border border-neutral-700 px-3 py-1 text-xs"
+              >
+                {t.edit}
+              </Link>
               <form action={deleteDepartment}>
                 <input type="hidden" name="id" value={dept.id} />
                 <button

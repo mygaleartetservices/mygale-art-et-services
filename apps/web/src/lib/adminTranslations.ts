@@ -399,6 +399,12 @@ const departments = {
     delete: 'Supprimer',
     noJobRoles: 'Aucun poste pour le moment.',
     noDepartments: 'Aucun département pour le moment. Ajoutez-en un ci-dessus pour commencer à assigner des employés.',
+    edit: 'Modifier',
+    editDepartment: 'Modifier le département',
+    back: 'Retour aux départements',
+    departmentName: 'Nom du département',
+    roleName: 'Nom du poste',
+    save: 'Enregistrer',
   },
   en: {
     title: 'Departments',
@@ -414,6 +420,12 @@ const departments = {
     delete: 'Delete',
     noJobRoles: 'No job roles yet.',
     noDepartments: 'No departments yet. Add one above to start assigning employees.',
+    edit: 'Edit',
+    editDepartment: 'Edit department',
+    back: 'Back to departments',
+    departmentName: 'Department name',
+    roleName: 'Role name',
+    save: 'Save',
   },
 }
 

@@ -95,3 +95,55 @@ export async function deleteJobRole(formData: FormData) {
   revalidatePath('/admin/departments')
   revalidatePath('/admin/users')
 }
+
+export async function updateDepartment(formData: FormData) {
+  const actor = await requireRole('ADMIN')
+  const id = asString(formData.get('id'))
+  const name = asString(formData.get('name'))
+  if (!id || !name) return
+
+  const department = await prisma.department.findUnique({ where: { id } })
+  if (!department || department.name === name) return
+
+  const clash = await prisma.department.findUnique({ where: { name } })
+  if (clash) return
+
+  await prisma.department.update({ where: { id }, data: { name } })
+
+  await writeAuditLog(
+    'department.update',
+    { entityType: 'Department', entityId: id, from: department.name, to: name },
+    actor.id,
+  )
+
+  revalidatePath('/admin/departments')
+  revalidatePath(`/admin/departments/${id}`)
+  revalidatePath('/admin/users')
+}
+
+export async function updateJobRole(formData: FormData) {
+  const actor = await requireRole('ADMIN')
+  const id = asString(formData.get('id'))
+  const name = asString(formData.get('name'))
+  if (!id || !name) return
+
+  const jobRole = await prisma.jobRole.findUnique({ where: { id } })
+  if (!jobRole || jobRole.name === name) return
+
+  const clash = await prisma.jobRole.findUnique({
+    where: { departmentId_name: { departmentId: jobRole.departmentId, name } },
+  })
+  if (clash) return
+
+  await prisma.jobRole.update({ where: { id }, data: { name } })
+
+  await writeAuditLog(
+    'jobRole.update',
+    { entityType: 'JobRole', entityId: id, departmentId: jobRole.departmentId, from: jobRole.name, to: name },
+    actor.id,
+  )
+
+  revalidatePath('/admin/departments')
+  revalidatePath(`/admin/departments/${jobRole.departmentId}`)
+  revalidatePath('/admin/users')
+}
