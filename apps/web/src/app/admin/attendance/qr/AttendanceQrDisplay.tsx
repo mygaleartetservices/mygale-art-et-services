@@ -69,8 +69,10 @@ export default function AttendanceQrDisplay({
           onClick={() =>
             downloadAttendanceQrPdf({
               qrDataUrl,
-              t,
-              validUntil: formatAdminDate(expiresAtIso, lang),
+              validUntil: {
+                fr: formatAdminDate(expiresAtIso, 'fr'),
+                en: formatAdminDate(expiresAtIso, 'en'),
+              },
               expired,
             })
           }
