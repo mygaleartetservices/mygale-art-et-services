@@ -5,6 +5,7 @@ import { useFormStatus } from 'react-dom'
 import { regenerateQr } from './actions'
 import { useAdminT, useLocale } from '@/lib/locale'
 import { formatAdminDate } from '@/lib/adminFormat'
+import { downloadAttendanceQrPdf } from '@/lib/attendanceQrPdf'
 
 type Props = {
   qrDataUrl: string
@@ -29,8 +30,8 @@ function SubmitButton({ label }: { label: string }) {
 }
 
 /**
- * The code is static until its configured expiry, so it can be printed and
- * posted. Printing hides everything except the QR itself (print:* classes).
+ * The code is static until its configured expiry, so it can be downloaded as
+ * a PDF (QR + usage instructions) and posted.
  */
 export default function AttendanceQrDisplay({
   qrDataUrl,
@@ -65,7 +66,14 @@ export default function AttendanceQrDisplay({
 
         <button
           type="button"
-          onClick={() => window.print()}
+          onClick={() =>
+            downloadAttendanceQrPdf({
+              qrDataUrl,
+              t,
+              validUntil: formatAdminDate(expiresAtIso, lang),
+              expired,
+            })
+          }
           className="w-full rounded-lg border border-neutral-700 px-4 py-2 text-sm font-semibold hover:bg-neutral-900"
         >
           {t.print}
