@@ -47,7 +47,7 @@
     "micromark-util-character": "^2.1.1",
     "dequal": "^2.0.3",
     "devlop": "^1.1.0",
-    "dompurify": "^3.4.13",
+    "dompurify": "^3.4.17",
     "estree-util-is-identifier-name": "^3.0.0",
     "framer-motion": "^12.43.0",
     "glob": "^12.0.0",
@@ -70,7 +70,7 @@
     "minimist": "^1.2.8",
     "motion-dom": "^12.43.0",
     "motion-utils": "^12.39.0",
-    "next": "16.3.8",
+    "next": "16.4.3",
     "node-fetch": "^3.3.2",
     "nodemailer": "^10.0.13",
     "parse5": "^8.0.0",
@@ -93,7 +93,7 @@
     "vfile-location": "^5.0.3",
     "vfile-message": "^4.0.3",
     "web-namespaces": "^2.0.1",
-    "zod": "^4.1.12",
+    "zod": "^4.6.6",
     "zwitch": "^2.0.4"
   },
   "devDependencies": {
@@ -145,7 +145,8 @@
       "yaml": ">=2.8.3",
       "deepmerge-ts": ">=8.0.0",
       "source-map-js": ">=1.2.2",
-      "prosemirror-view": ">=1.42.3"
+      "prosemirror-view": ">=1.42.3",
+      "markdown-it": "^14.3.3"
     }
   }
 }
