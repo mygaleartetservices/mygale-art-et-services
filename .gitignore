@@ -24,3 +24,7 @@ apps/web/.next
 .github/instructions/snyk_rules.instructions.md
 .env
 .env.prod
+
+# Private keys / certificates must never be committed
+*.pem
+*.key

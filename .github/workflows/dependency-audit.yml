@@ -5,6 +5,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 concurrency:
   group: dependency-audit-${{ github.ref }}
   cancel-in-progress: true
@@ -24,7 +27,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          check-latest: true
           cache: 'pnpm'
 
       - name: Install dependencies

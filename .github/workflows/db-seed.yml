@@ -13,6 +13,9 @@ on:
           - seed-cms
           - both
 
+permissions:
+  contents: read
+
 jobs:
   seed:
     runs-on: ubuntu-latest
@@ -32,7 +35,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          check-latest: true
           cache: 'pnpm'
 
       - name: Install dependencies
